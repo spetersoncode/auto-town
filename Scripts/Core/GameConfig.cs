@@ -78,4 +78,135 @@ public static class GameConfig
     /// Default height for building placeholder sprites in pixels.
     /// </summary>
     public const float BUILDING_SPRITE_HEIGHT = 32f;
+
+    // === Map Generation Configuration ===
+
+    /// <summary>
+    /// Width of the generated map in tiles.
+    /// </summary>
+    public const int MAP_WIDTH = 100;
+
+    /// <summary>
+    /// Height of the generated map in tiles.
+    /// </summary>
+    public const int MAP_HEIGHT = 100;
+
+    /// <summary>
+    /// Size of each tile in pixels.
+    /// </summary>
+    public const int TILE_SIZE = 16;
+
+    /// <summary>
+    /// Noise frequency for terrain generation (higher = more varied).
+    /// </summary>
+    public const float NOISE_FREQUENCY = 0.05f;
+
+    /// <summary>
+    /// Number of noise octaves for terrain detail.
+    /// </summary>
+    public const int NOISE_OCTAVES = 3;
+
+    /// <summary>
+    /// Threshold for water generation (-1 to 1, values below this become water).
+    /// </summary>
+    public const float WATER_THRESHOLD = -0.3f;
+
+    /// <summary>
+    /// Threshold for mountain generation (-1 to 1, values above this become mountains).
+    /// </summary>
+    public const float MOUNTAIN_THRESHOLD = 0.5f;
+
+    // === Resource Spawning Configuration ===
+
+    /// <summary>
+    /// Number of tree clusters to spawn across the map.
+    /// </summary>
+    public const int TREE_CLUSTER_COUNT = 15;
+
+    /// <summary>
+    /// Number of trees per cluster (approximate).
+    /// </summary>
+    public const int TREES_PER_CLUSTER = 8;
+
+    /// <summary>
+    /// Radius of tree cluster spawn area in tiles.
+    /// </summary>
+    public const int TREE_CLUSTER_RADIUS = 4;
+
+    /// <summary>
+    /// Number of stone deposit clusters to spawn.
+    /// </summary>
+    public const int STONE_CLUSTER_COUNT = 10;
+
+    /// <summary>
+    /// Number of stone nodes per cluster (approximate).
+    /// </summary>
+    public const int STONES_PER_CLUSTER = 5;
+
+    /// <summary>
+    /// Radius of stone cluster spawn area in tiles.
+    /// </summary>
+    public const int STONE_CLUSTER_RADIUS = 3;
+
+    /// <summary>
+    /// Number of foraging areas to spawn.
+    /// </summary>
+    public const int FORAGE_AREA_COUNT = 12;
+
+    /// <summary>
+    /// Number of forage nodes per area (approximate).
+    /// </summary>
+    public const int FORAGES_PER_AREA = 6;
+
+    /// <summary>
+    /// Radius of foraging area spawn in tiles.
+    /// </summary>
+    public const int FORAGE_AREA_RADIUS = 3;
+
+    /// <summary>
+    /// Minimum spacing between resource clusters in tiles.
+    /// </summary>
+    public const int RESOURCE_MIN_SPACING = 8;
+
+    // === Camera Configuration ===
+
+    /// <summary>
+    /// Camera panning speed in pixels per second.
+    /// </summary>
+    public const float CAMERA_MOVE_SPEED = 300f;
+
+    /// <summary>
+    /// Minimum camera zoom level (zoomed out).
+    /// </summary>
+    public const float CAMERA_ZOOM_MIN = 0.5f;
+
+    /// <summary>
+    /// Maximum camera zoom level (zoomed in).
+    /// </summary>
+    public const float CAMERA_ZOOM_MAX = 2.0f;
+
+    /// <summary>
+    /// Default camera zoom level.
+    /// </summary>
+    public const float CAMERA_ZOOM_DEFAULT = 1.0f;
+
+    /// <summary>
+    /// Zoom step when using mouse wheel.
+    /// </summary>
+    public const float CAMERA_ZOOM_STEP = 0.1f;
+
+    /// <summary>
+    /// Edge scrolling activation threshold in pixels from screen edge.
+    /// </summary>
+    public const float CAMERA_EDGE_SCROLL_THRESHOLD = 20f;
+
+    /// <summary>
+    /// Edge scrolling speed multiplier (multiplies CAMERA_MOVE_SPEED).
+    /// </summary>
+    public const float CAMERA_EDGE_SCROLL_SPEED = 1.0f;
+
+    /// <summary>
+    /// Camera boundary padding in tiles (prevents camera from going past map edge).
+    /// </summary>
+    public const int CAMERA_BOUNDARY_PADDING = 2;
 }
