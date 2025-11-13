@@ -1,14 +1,18 @@
 using System.Collections.Generic;
+using Godot;
 using autotown.Core;
 
 namespace autotown.Data;
 
 /// <summary>
 /// Static definitions for all building types in the game.
-/// Provides centralized building data to avoid duplication.
+/// Loads building data from resource files for inspector-based configuration.
 /// </summary>
 public static class BuildingDefinitions
 {
+    // Cache for loaded building resources
+    private static readonly Dictionary<BuildingType, BuildingResource> _resourceCache = new();
+
     /// <summary>
     /// Gets the building data for a specific building type.
     /// </summary>
@@ -18,120 +22,81 @@ public static class BuildingDefinitions
     {
         return type switch
         {
-            BuildingType.House => CreateHouseData(),
-            BuildingType.Sawmill => CreateSawmillData(),
-            BuildingType.Mine => CreateMineData(),
-            BuildingType.Farm => CreateFarmData(),
-            BuildingType.TownHall => CreateTownHallData(),
+            BuildingType.House => CreateBuildingDataFromResource(type, "res://Resources/Buildings/House.tres", 2, 2, "Provides housing for population growth"),
+            BuildingType.Sawmill => CreateBuildingDataFromResource(type, "res://Resources/Buildings/Sawmill.tres", 2, 2, "Processes wood periodically"),
+            BuildingType.Mine => CreateBuildingDataFromResource(type, "res://Resources/Buildings/Mine.tres", 2, 2, "Extracts stone periodically"),
+            BuildingType.Farm => CreateBuildingDataFromResource(type, "res://Resources/Buildings/Farm.tres", 3, 2, "Produces food periodically"),
+            BuildingType.TownHall => CreateBuildingDataFromResource(type, "res://Resources/Buildings/TownHall.tres", 3, 3, "Central building where workers spawn"),
             BuildingType.Stockpile => CreateStockpileData(),
             _ => new BuildingData()
         };
     }
 
     /// <summary>
-    /// Creates building data for a House.
+    /// Creates BuildingData from a BuildingResource file.
     /// </summary>
-    private static BuildingData CreateHouseData()
+    private static BuildingData CreateBuildingDataFromResource(BuildingType type, string resourcePath, int width, int height, string description)
     {
-        return new BuildingData
+        var resource = LoadBuildingResource(type, resourcePath);
+
+        var data = new BuildingData
         {
-            Type = BuildingType.House,
-            Name = "House",
-            Description = "Provides housing for population growth",
-            BuildTime = GameConfig.HOUSE_BUILD_TIME,
-            Cost = new Dictionary<ResourceType, int>
-            {
-                { ResourceType.Wood, GameConfig.HOUSE_COST_WOOD },
-                { ResourceType.Stone, GameConfig.HOUSE_COST_STONE }
-            },
-            Width = 2,
-            Height = 2
+            Type = type,
+            Name = resource.BuildingName,
+            Description = description,
+            BuildTime = resource.BuildTime,
+            Cost = new Dictionary<ResourceType, int>(),
+            Width = width,
+            Height = height
         };
+
+        // Add costs to dictionary (only if > 0)
+        if (resource.WoodCost > 0)
+            data.Cost[ResourceType.Wood] = resource.WoodCost;
+        if (resource.StoneCost > 0)
+            data.Cost[ResourceType.Stone] = resource.StoneCost;
+        if (resource.FoodCost > 0)
+            data.Cost[ResourceType.Food] = resource.FoodCost;
+
+        return data;
     }
 
     /// <summary>
-    /// Creates building data for a Sawmill.
+    /// Loads a BuildingResource from file, with caching.
     /// </summary>
-    private static BuildingData CreateSawmillData()
+    private static BuildingResource LoadBuildingResource(BuildingType type, string path)
     {
-        return new BuildingData
+        if (_resourceCache.TryGetValue(type, out var cached))
+            return cached;
+
+        var resource = GD.Load<BuildingResource>(path);
+        if (resource == null)
         {
-            Type = BuildingType.Sawmill,
-            Name = "Sawmill",
-            Description = "Processes wood periodically",
-            BuildTime = GameConfig.SAWMILL_BUILD_TIME,
-            Cost = new Dictionary<ResourceType, int>
-            {
-                { ResourceType.Wood, GameConfig.SAWMILL_COST_WOOD },
-                { ResourceType.Stone, GameConfig.SAWMILL_COST_STONE }
-            },
-            Width = 2,
-            Height = 2
-        };
+            GD.PushError($"[BuildingDefinitions] Failed to load resource at {path}");
+            return new BuildingResource(); // Return default
+        }
+
+        _resourceCache[type] = resource;
+        return resource;
     }
 
     /// <summary>
-    /// Creates building data for a Mine.
+    /// Gets the BuildingResource for a specific building type.
+    /// Useful for accessing production data and other resource-specific properties.
     /// </summary>
-    private static BuildingData CreateMineData()
+    public static BuildingResource GetBuildingResource(BuildingType type)
     {
-        return new BuildingData
+        return type switch
         {
-            Type = BuildingType.Mine,
-            Name = "Mine",
-            Description = "Extracts stone periodically",
-            BuildTime = GameConfig.MINE_BUILD_TIME,
-            Cost = new Dictionary<ResourceType, int>
-            {
-                { ResourceType.Wood, GameConfig.MINE_COST_WOOD },
-                { ResourceType.Stone, GameConfig.MINE_COST_STONE }
-            },
-            Width = 2,
-            Height = 2
+            BuildingType.House => LoadBuildingResource(type, "res://Resources/Buildings/House.tres"),
+            BuildingType.Sawmill => LoadBuildingResource(type, "res://Resources/Buildings/Sawmill.tres"),
+            BuildingType.Mine => LoadBuildingResource(type, "res://Resources/Buildings/Mine.tres"),
+            BuildingType.Farm => LoadBuildingResource(type, "res://Resources/Buildings/Farm.tres"),
+            BuildingType.TownHall => LoadBuildingResource(type, "res://Resources/Buildings/TownHall.tres"),
+            _ => new BuildingResource()
         };
     }
 
-    /// <summary>
-    /// Creates building data for a Farm.
-    /// </summary>
-    private static BuildingData CreateFarmData()
-    {
-        return new BuildingData
-        {
-            Type = BuildingType.Farm,
-            Name = "Farm",
-            Description = "Produces food periodically",
-            BuildTime = GameConfig.FARM_BUILD_TIME,
-            Cost = new Dictionary<ResourceType, int>
-            {
-                { ResourceType.Wood, GameConfig.FARM_COST_WOOD },
-                { ResourceType.Stone, GameConfig.FARM_COST_STONE }
-            },
-            Width = 3,
-            Height = 2
-        };
-    }
-
-    /// <summary>
-    /// Creates building data for a TownHall.
-    /// </summary>
-    private static BuildingData CreateTownHallData()
-    {
-        return new BuildingData
-        {
-            Type = BuildingType.TownHall,
-            Name = "Town Hall",
-            Description = "Central building where workers spawn",
-            BuildTime = GameConfig.TOWNHALL_BUILD_TIME,
-            Cost = new Dictionary<ResourceType, int>
-            {
-                { ResourceType.Wood, GameConfig.TOWNHALL_COST_WOOD },
-                { ResourceType.Stone, GameConfig.TOWNHALL_COST_STONE }
-            },
-            Width = 3,
-            Height = 3
-        };
-    }
 
     /// <summary>
     /// Creates building data for a Stockpile.

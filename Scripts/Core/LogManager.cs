@@ -13,22 +13,22 @@ public static class LogManager
     /// <summary>
     /// Enable debug logs for BuildingManager (placement, construction workflow)
     /// </summary>
-    public const bool DEBUG_BUILDING_MANAGER = true;
+    public const bool DEBUG_BUILDING_MANAGER = false;
 
     /// <summary>
     /// Enable debug logs for ConstructionSite (resource delivery, construction progress)
     /// </summary>
-    public const bool DEBUG_CONSTRUCTION_SITE = true;
+    public const bool DEBUG_CONSTRUCTION_SITE = false;
 
     /// <summary>
     /// Enable debug logs for BuildTask (construction work progress)
     /// </summary>
-    public const bool DEBUG_BUILD_TASK = true;
+    public const bool DEBUG_BUILD_TASK = false;
 
     /// <summary>
     /// Enable debug logs for HaulResourceTask (hauling resources to construction sites)
     /// </summary>
-    public const bool DEBUG_HAUL_TASK = true;
+    public const bool DEBUG_HAUL_TASK = false;
 
     /// <summary>
     /// Enable debug logs for Worker (movement, task assignment, state changes)

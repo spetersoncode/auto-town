@@ -1,5 +1,4 @@
 using Godot;
-using autotown.Core;
 using autotown.Data;
 
 namespace autotown.Entities;
@@ -13,7 +12,7 @@ public partial class House : Building
     /// <summary>
     /// Housing capacity provided by this house.
     /// </summary>
-    public int HousingCapacity { get; private set; } = GameConfig.HOUSE_CAPACITY;
+    public int HousingCapacity { get; private set; }
 
     /// <summary>
     /// Number of workers currently living in this house.
@@ -33,6 +32,11 @@ public partial class House : Building
     protected override void OnReady()
     {
         Type = BuildingType.House;
+
+        // Load housing capacity from building resource
+        var resource = BuildingDefinitions.GetBuildingResource(Type);
+        HousingCapacity = resource.HousingCapacity;
+
         GD.Print($"[House] Initialized with capacity {HousingCapacity}");
     }
 

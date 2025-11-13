@@ -27,12 +27,18 @@ public partial class Sawmill : Building
     /// </summary>
     private TaskManager _taskManager;
 
+    /// <summary>
+    /// Building resource containing production parameters.
+    /// </summary>
+    private BuildingResource _resource;
+
     protected override void OnReady()
     {
         Type = BuildingType.Sawmill;
         _taskManager = GetNode<TaskManager>("/root/TaskManager");
+        _resource = BuildingDefinitions.GetBuildingResource(Type);
 
-        GD.Print($"[Sawmill] Initialized - will produce {GameConfig.SAWMILL_WOOD_OUTPUT} Wood every {GameConfig.PROCESSING_TASK_INTERVAL}s");
+        GD.Print($"[Sawmill] Initialized - will produce {_resource.ProductionOutput} Wood every {GameConfig.PROCESSING_TASK_INTERVAL}s");
     }
 
     protected override void OnActivated()
@@ -73,8 +79,8 @@ public partial class Sawmill : Building
         var processTask = new ProcessTask(
             this,
             ResourceType.Wood,
-            GameConfig.SAWMILL_WOOD_OUTPUT,
-            GameConfig.SAWMILL_PROCESS_TIME,
+            _resource.ProductionOutput,
+            _resource.ProductionTime,
             new[] { JobType.Lumberjack }
         );
 
@@ -85,7 +91,7 @@ public partial class Sawmill : Building
         _hasActiveTask = true;
         _taskManager.AddTask(processTask);
 
-        GD.Print($"[Sawmill] Generated processing task for {GameConfig.SAWMILL_WOOD_OUTPUT} Wood");
+        GD.Print($"[Sawmill] Generated processing task for {_resource.ProductionOutput} Wood");
     }
 
     /// <summary>

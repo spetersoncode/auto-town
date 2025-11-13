@@ -1,0 +1,15 @@
+[gd_resource type="Resource" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://Scripts/Data/BuildingResource.cs" id="1"]
+
+[resource]
+script = ExtResource("1")
+BuildingName = "Mine"
+WoodCost = 60
+StoneCost = 80
+FoodCost = 0
+BuildTime = 10.0
+HousingCapacity = 0
+ProductionOutput = 20
+ProductionTime = 6.0
+ProductionResourceType = "Stone"

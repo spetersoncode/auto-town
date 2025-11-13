@@ -1,22 +1,24 @@
 using Godot;
-using autotown.Core;
 using autotown.Data;
 
 namespace autotown.Entities;
 
 /// <summary>
 /// Stone resource node that provides stone.
-/// Extends HarvestableResource with stone-specific configuration from GameConfig.
+/// Extends HarvestableResource with stone-specific configuration from resource files.
 /// </summary>
 public partial class StoneNode : HarvestableResource
 {
     public override void _Ready()
     {
-        // Configure stone-specific properties from GameConfig
-        ResourceType = ResourceType.Stone;
-        MaxHarvests = GameConfig.STONE_MAX_HARVESTS;
-        YieldPerHarvest = GameConfig.STONE_YIELD_PER_HARVEST;
-        HarvestDuration = GameConfig.STONE_HARVEST_DURATION;
+        // Load stone configuration from resource file
+        var config = GD.Load<HarvestableResourceConfig>("res://Resources/Harvestables/StoneConfig.tres");
+
+        // Configure stone properties from config
+        ResourceType = config.ResourceType;
+        MaxHarvests = config.MaxHarvests;
+        YieldPerHarvest = config.YieldPerHarvest;
+        HarvestDuration = config.HarvestDuration;
 
         // Call base _Ready to initialize
         base._Ready();

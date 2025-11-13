@@ -1,22 +1,24 @@
 using Godot;
-using autotown.Core;
 using autotown.Data;
 
 namespace autotown.Entities;
 
 /// <summary>
 /// Forage resource node that provides food.
-/// Extends HarvestableResource with forage-specific configuration from GameConfig.
+/// Extends HarvestableResource with forage-specific configuration from resource files.
 /// </summary>
 public partial class ForageNode : HarvestableResource
 {
     public override void _Ready()
     {
-        // Configure forage-specific properties from GameConfig
-        ResourceType = ResourceType.Food;
-        MaxHarvests = GameConfig.FORAGE_MAX_HARVESTS;
-        YieldPerHarvest = GameConfig.FORAGE_YIELD_PER_HARVEST;
-        HarvestDuration = GameConfig.FORAGE_HARVEST_DURATION;
+        // Load forage configuration from resource file
+        var config = GD.Load<HarvestableResourceConfig>("res://Resources/Harvestables/ForageConfig.tres");
+
+        // Configure forage properties from config
+        ResourceType = config.ResourceType;
+        MaxHarvests = config.MaxHarvests;
+        YieldPerHarvest = config.YieldPerHarvest;
+        HarvestDuration = config.HarvestDuration;
 
         // Call base _Ready to initialize
         base._Ready();

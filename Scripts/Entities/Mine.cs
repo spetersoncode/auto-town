@@ -27,12 +27,18 @@ public partial class Mine : Building
     /// </summary>
     private TaskManager _taskManager;
 
+    /// <summary>
+    /// Building resource containing production parameters.
+    /// </summary>
+    private BuildingResource _resource;
+
     protected override void OnReady()
     {
         Type = BuildingType.Mine;
         _taskManager = GetNode<TaskManager>("/root/TaskManager");
+        _resource = BuildingDefinitions.GetBuildingResource(Type);
 
-        GD.Print($"[Mine] Initialized - will produce {GameConfig.MINE_STONE_OUTPUT} Stone every {GameConfig.PROCESSING_TASK_INTERVAL}s");
+        GD.Print($"[Mine] Initialized - will produce {_resource.ProductionOutput} Stone every {GameConfig.PROCESSING_TASK_INTERVAL}s");
     }
 
     protected override void OnActivated()
@@ -73,8 +79,8 @@ public partial class Mine : Building
         var processTask = new ProcessTask(
             this,
             ResourceType.Stone,
-            GameConfig.MINE_STONE_OUTPUT,
-            GameConfig.MINE_PROCESS_TIME,
+            _resource.ProductionOutput,
+            _resource.ProductionTime,
             new[] { JobType.Miner }
         );
 
@@ -85,7 +91,7 @@ public partial class Mine : Building
         _hasActiveTask = true;
         _taskManager.AddTask(processTask);
 
-        GD.Print($"[Mine] Generated processing task for {GameConfig.MINE_STONE_OUTPUT} Stone");
+        GD.Print($"[Mine] Generated processing task for {_resource.ProductionOutput} Stone");
     }
 
     /// <summary>

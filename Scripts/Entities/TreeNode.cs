@@ -1,22 +1,24 @@
 using Godot;
-using autotown.Core;
 using autotown.Data;
 
 namespace autotown.Entities;
 
 /// <summary>
 /// Tree resource node that provides wood.
-/// Extends HarvestableResource with tree-specific configuration from GameConfig.
+/// Extends HarvestableResource with tree-specific configuration from resource files.
 /// </summary>
 public partial class TreeNode : HarvestableResource
 {
     public override void _Ready()
     {
-        // Configure tree-specific properties from GameConfig
-        ResourceType = ResourceType.Wood;
-        MaxHarvests = GameConfig.TREE_MAX_HARVESTS;
-        YieldPerHarvest = GameConfig.TREE_YIELD_PER_HARVEST;
-        HarvestDuration = GameConfig.TREE_HARVEST_DURATION;
+        // Load tree configuration from resource file
+        var config = GD.Load<HarvestableResourceConfig>("res://Resources/Harvestables/TreeConfig.tres");
+
+        // Configure tree properties from config
+        ResourceType = config.ResourceType;
+        MaxHarvests = config.MaxHarvests;
+        YieldPerHarvest = config.YieldPerHarvest;
+        HarvestDuration = config.HarvestDuration;
 
         // Call base _Ready to initialize
         base._Ready();

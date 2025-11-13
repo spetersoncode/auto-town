@@ -27,12 +27,18 @@ public partial class Farm : Building
     /// </summary>
     private TaskManager _taskManager;
 
+    /// <summary>
+    /// Building resource containing production parameters.
+    /// </summary>
+    private BuildingResource _resource;
+
     protected override void OnReady()
     {
         Type = BuildingType.Farm;
         _taskManager = GetNode<TaskManager>("/root/TaskManager");
+        _resource = BuildingDefinitions.GetBuildingResource(Type);
 
-        GD.Print($"[Farm] Initialized - will produce {GameConfig.FARM_FOOD_OUTPUT} Food every {GameConfig.PROCESSING_TASK_INTERVAL}s");
+        GD.Print($"[Farm] Initialized - will produce {_resource.ProductionOutput} Food every {GameConfig.PROCESSING_TASK_INTERVAL}s");
     }
 
     protected override void OnActivated()
@@ -73,8 +79,8 @@ public partial class Farm : Building
         var processTask = new ProcessTask(
             this,
             ResourceType.Food,
-            GameConfig.FARM_FOOD_OUTPUT,
-            GameConfig.FARM_PROCESS_TIME,
+            _resource.ProductionOutput,
+            _resource.ProductionTime,
             new[] { JobType.Farmer }
         );
 
@@ -85,7 +91,7 @@ public partial class Farm : Building
         _hasActiveTask = true;
         _taskManager.AddTask(processTask);
 
-        GD.Print($"[Farm] Generated processing task for {GameConfig.FARM_FOOD_OUTPUT} Food");
+        GD.Print($"[Farm] Generated processing task for {_resource.ProductionOutput} Food");
     }
 
     /// <summary>
