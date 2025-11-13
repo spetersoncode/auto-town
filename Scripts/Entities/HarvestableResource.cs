@@ -97,11 +97,6 @@ public partial class HarvestableResource : Node2D
     /// </summary>
     private ColorRect _visual;
 
-    /// <summary>
-    /// Original color of the visual before depletion.
-    /// </summary>
-    private Color _originalColor;
-
     // === Public Properties ===
 
     /// <summary>
@@ -133,12 +128,8 @@ public partial class HarvestableResource : Node2D
 
     public override void _Ready()
     {
-        // Get the visual node for visual feedback
+        // Get the visual node (currently not used, but available for future features)
         _visual = GetNodeOrNull<ColorRect>("Visual");
-        if (_visual != null)
-        {
-            _originalColor = _visual.Color;
-        }
 
         GD.Print($"[HarvestableResource] {ResourceType} node initialized at {GlobalPosition}. " +
                  $"Max Harvests: {MaxHarvests}, Yield: {YieldPerHarvest}");
@@ -276,26 +267,13 @@ public partial class HarvestableResource : Node2D
         _reservedByWorker = null;
         _harvestProgress = 0.0f;
 
-        GD.Print($"[HarvestableResource] {ResourceType} depleted at {GlobalPosition}");
+        GD.Print($"[HarvestableResource] {ResourceType} depleted at {GlobalPosition} - removing from scene");
 
-        // Visual feedback - darken the sprite
-        UpdateVisualForDepletion();
-
-        // Emit depleted signal
+        // Emit depleted signal before removal
         EmitSignal(SignalName.ResourceDepleted, this);
-    }
 
-    /// <summary>
-    /// Updates the visual appearance when depleted.
-    /// </summary>
-    private void UpdateVisualForDepletion()
-    {
-        if (_visual != null)
-        {
-            // Darken the color to indicate depletion
-            _visual.Color = _originalColor.Darkened(0.5f);
-            _visual.Modulate = new Color(1, 1, 1, 0.5f); // Also reduce opacity
-        }
+        // Remove the node from the scene entirely
+        QueueFree();
     }
 
     /// <summary>
