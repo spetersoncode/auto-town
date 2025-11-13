@@ -129,6 +129,27 @@ public partial class GameManager : Node
     }
 
     /// <summary>
+    /// Cycles through available game speeds (1x → 2x → 3x → 1x).
+    /// </summary>
+    public void CycleGameSpeed()
+    {
+        if (GameSpeed == GameConfig.GAME_SPEED_NORMAL)
+        {
+            GameSpeed = GameConfig.GAME_SPEED_FAST;
+        }
+        else if (GameSpeed == GameConfig.GAME_SPEED_FAST)
+        {
+            GameSpeed = GameConfig.GAME_SPEED_FASTER;
+        }
+        else
+        {
+            GameSpeed = GameConfig.GAME_SPEED_NORMAL;
+        }
+
+        GD.Print($"GameManager: Game speed cycled to {GameSpeed}x");
+    }
+
+    /// <summary>
     /// Starts a new game.
     /// </summary>
     public void NewGame()
@@ -158,22 +179,14 @@ public partial class GameManager : Node
             TogglePause();
         }
 
-        // Number keys for game speed (1-3)
+        // Tab key to cycle through game speeds
         if (_currentState == GameState.Playing)
         {
-            if (@event is InputEventKey keyEvent && keyEvent.Pressed)
+            if (@event is InputEventKey keyEvent && keyEvent.Pressed && !keyEvent.Echo)
             {
-                switch (keyEvent.Keycode)
+                if (keyEvent.Keycode == Key.Tab)
                 {
-                    case Key.Key1:
-                        GameSpeed = GameConfig.GAME_SPEED_NORMAL;
-                        break;
-                    case Key.Key2:
-                        GameSpeed = GameConfig.GAME_SPEED_FAST;
-                        break;
-                    case Key.Key3:
-                        GameSpeed = GameConfig.GAME_SPEED_FASTER;
-                        break;
+                    CycleGameSpeed();
                 }
             }
         }
