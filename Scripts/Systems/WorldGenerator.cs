@@ -60,10 +60,11 @@ public class WorldGenerator
         Node2D resourceContainer = worldNode.GetNode<Node2D>("ResourceNodes");
         SpawnResourceNodes(resourceContainer, worldData);
 
-        // Spawn starter buildings (TownHall and Stockpile at center)
+        // Spawn starter buildings (TownHall, Stockpile, and House at center)
         Node2D buildingContainer = worldNode.GetNode<Node2D>("Buildings");
         SpawnStarterTownHall(buildingContainer, worldData);
         SpawnStarterStockpile(buildingContainer, worldData);
+        SpawnStarterHouse(buildingContainer, worldData);
 
         GD.Print("WorldGenerator: World generation complete!");
         return worldData;
@@ -346,5 +347,39 @@ public class WorldGenerator
         worldData.AddBuildingPosition(stockpilePos);
 
         GD.Print($"WorldGenerator: Stockpile spawned at {stockpilePos}");
+    }
+
+    /// <summary>
+    /// Spawns a starter House to provide initial housing for the 5 starting workers.
+    /// </summary>
+    private void SpawnStarterHouse(Node2D container, WorldData worldData)
+    {
+        GD.Print("WorldGenerator: Spawning starter House...");
+
+        Vector2 centerPos = worldData.GetMapCenter();
+
+        // Offset from TownHall (6 tiles down for good spacing)
+        Vector2 housePos = centerPos + new Vector2(0, _config.TileSize * 6);
+
+        // Load house scene
+        PackedScene houseScene = GD.Load<PackedScene>("res://Scenes/Entities/House.tscn");
+        if (houseScene == null)
+        {
+            GD.PrintErr("WorldGenerator: Failed to load House.tscn");
+            return;
+        }
+
+        // Instantiate and position
+        var house = houseScene.Instantiate<Building>();
+        house.Name = "StarterHouse";
+        house.Position = housePos;
+
+        container.AddChild(house);
+        worldData.AddBuildingPosition(housePos);
+
+        // Note: House will be registered by WorldController after generation
+        // Don't activate it here - let WorldController handle registration and activation
+
+        GD.Print($"WorldGenerator: Starter House spawned at {housePos}");
     }
 }

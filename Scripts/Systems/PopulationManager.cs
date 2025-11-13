@@ -344,6 +344,22 @@ public partial class PopulationManager : Node
     }
 
     /// <summary>
+    /// Manually registers a pre-existing house (like the starter house).
+    /// Call this for houses that exist before PopulationManager initialization.
+    /// </summary>
+    public void RegisterStarterHouse(House house)
+    {
+        if (house == null)
+        {
+            GD.PushWarning("[PopulationManager] Cannot register null starter house");
+            return;
+        }
+
+        GD.Print($"[PopulationManager] Registering starter house at {house.GlobalPosition}");
+        RegisterHouse(house);
+    }
+
+    /// <summary>
     /// Unregisters a house (e.g., if destroyed).
     /// </summary>
     public void UnregisterHouse(House house)

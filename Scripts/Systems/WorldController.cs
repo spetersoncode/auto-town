@@ -49,6 +49,11 @@ public partial class WorldController : Node2D
     private TownHall _townHall;
 
     /// <summary>
+    /// Reference to the starter house building.
+    /// </summary>
+    private House _starterHouse;
+
+    /// <summary>
     /// Cached reference to TaskManager.
     /// </summary>
     private TaskManager _taskManager;
@@ -113,9 +118,10 @@ public partial class WorldController : Node2D
         _camera.SetBounds(WorldData.Width, WorldData.Height);
         _camera.CenterOn(WorldData.GetMapCenter());
 
-        // Find the stockpile and town hall (spawned during world generation)
+        // Find the stockpile, town hall, and starter house (spawned during world generation)
         FindStockpile();
         FindTownHall();
+        FindStarterHouse();
 
         // Register and activate the starter town hall
         if (_townHall != null)
@@ -123,6 +129,14 @@ public partial class WorldController : Node2D
             _buildingManager.RegisterBuilding(_townHall);
             _townHall.Activate();
             GD.Print("WorldController: Starter TownHall registered and activated");
+        }
+
+        // Register and activate the starter house
+        if (_starterHouse != null)
+        {
+            _buildingManager.RegisterBuilding(_starterHouse);
+            _starterHouse.Activate();
+            GD.Print("WorldController: Starter House registered and activated");
         }
 
         // Initialize BuildingManager with stockpile reference
@@ -142,6 +156,13 @@ public partial class WorldController : Node2D
 
         // Initialize PopulationManager
         InitializePopulationManager();
+
+        // Register the starter house with PopulationManager (after initialization)
+        if (_starterHouse != null && _populationManager != null)
+        {
+            _populationManager.RegisterStarterHouse(_starterHouse);
+            GD.Print("WorldController: Starter house registered with PopulationManager");
+        }
 
         GD.Print("WorldController: World initialization complete!");
         GD.Print("WorldController: Press F1-F4 to place buildings (F1=House, F2=Sawmill, F3=Mine, F4=Farm)");
@@ -289,6 +310,25 @@ public partial class WorldController : Node2D
         }
 
         GD.PrintErr("WorldController: Town hall not found!");
+    }
+
+    /// <summary>
+    /// Finds the starter house building in the Buildings container.
+    /// </summary>
+    private void FindStarterHouse()
+    {
+        var buildingsContainer = GetNode<Node2D>("Buildings");
+        foreach (var child in buildingsContainer.GetChildren())
+        {
+            if (child is House house && child.Name == "StarterHouse")
+            {
+                _starterHouse = house;
+                GD.Print($"WorldController: Found starter house at {_starterHouse.GlobalPosition}");
+                return;
+            }
+        }
+
+        GD.PrintErr("WorldController: Starter house not found!");
     }
 
     /// <summary>
