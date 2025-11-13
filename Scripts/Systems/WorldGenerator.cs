@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using autotown.Core;
 using autotown.Data;
+using autotown.Entities;
 
 namespace autotown.Systems;
 
@@ -293,8 +294,8 @@ public class WorldGenerator
 
         Vector2 centerPos = worldData.GetMapCenter();
 
-        // Create simple placeholder building
-        Node2D townHall = new Node2D();
+        // Create TownHall instance with script
+        var townHall = new TownHall();
         townHall.Name = "StarterTownHall";
         townHall.Position = centerPos;
 
@@ -309,6 +310,9 @@ public class WorldGenerator
 
         container.AddChild(townHall);
         worldData.AddBuildingPosition(centerPos);
+
+        // Activate the town hall immediately since it's a starter building
+        townHall.Activate();
 
         GD.Print($"WorldGenerator: TownHall spawned at {centerPos} (no collision)");
     }

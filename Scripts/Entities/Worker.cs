@@ -446,6 +446,31 @@ public partial class Worker : CharacterBody2D
 
             task.OnStart();
         }
+        else if (task is GrowthFoodTask growthFoodTask)
+        {
+            // Validate growth food task
+            if (!growthFoodTask.IsValid())
+            {
+                GD.Print($"Worker: Growth food task is invalid");
+                return;
+            }
+
+            // Try to assign the task
+            if (!task.TryAssign(this))
+            {
+                GD.Print($"Worker: Failed to assign growth food task");
+                return;
+            }
+
+            _currentTask = task;
+            GD.Print($"Worker: Assigned Growth Food task - hauling {growthFoodTask.Amount} food to town hall");
+
+            // Start moving to source (stockpile) to pick up food
+            SetState(WorkerState.Moving);
+            SetDestination(growthFoodTask.SourcePosition);
+
+            task.OnStart();
+        }
         else if (task is BuildTask buildTask)
         {
             // Validate build task
@@ -556,6 +581,31 @@ public partial class Worker : CharacterBody2D
                     SetState(WorkerState.Idle);
                 }
             }
+            else if (_currentTask is GrowthFoodTask growthFoodTask)
+            {
+                // Reached source (stockpile) to pick up food for population growth
+                GD.Print($"Worker: Reached stockpile to pick up {growthFoodTask.Amount} food for population growth");
+
+                // Try to withdraw food from stockpile
+                if (growthFoodTask.TryWithdrawResource(_stockpile))
+                {
+                    // Pick up food
+                    _data.PickupResource(ResourceType.Food, growthFoodTask.Amount);
+                    GD.Print($"Worker: Picked up {growthFoodTask.Amount} food for town hall");
+
+                    // Now haul to town hall
+                    SetState(WorkerState.Hauling);
+                    SetDestination(growthFoodTask.DestinationPosition);
+                }
+                else
+                {
+                    // Failed to withdraw food - cancel task
+                    GD.Print($"Worker: Failed to withdraw food, canceling growth food task");
+                    _currentTask.Cancel();
+                    _currentTask = null;
+                    SetState(WorkerState.Idle);
+                }
+            }
             else if (_currentTask is BuildTask buildTask)
             {
                 // Reached construction site
@@ -603,6 +653,33 @@ public partial class Worker : CharacterBody2D
                 else
                 {
                     GD.Print($"Worker: Failed to deliver resources, canceling task");
+                    _data.DropResource();
+                    _currentTask.Cancel();
+                    _currentTask = null;
+                    SetState(WorkerState.Idle);
+                }
+            }
+            else if (_currentTask is GrowthFoodTask growthFoodTask)
+            {
+                // Reached town hall with food for population growth
+                GD.Print($"Worker: Reached town hall, delivering {_data.CarriedAmount} food for population growth");
+
+                // Deliver food to town hall
+                if (growthFoodTask.TryDeliverFood())
+                {
+                    // Clear carried resources
+                    _data.DropResource();
+                    GD.Print($"Worker: Delivered {growthFoodTask.Amount} food to town hall");
+
+                    // Complete the growth food task
+                    _currentTask.Complete();
+                    _currentTask = null;
+
+                    SetState(WorkerState.Idle);
+                }
+                else
+                {
+                    GD.Print($"Worker: Failed to deliver food to town hall, canceling task");
                     _data.DropResource();
                     _currentTask.Cancel();
                     _currentTask = null;

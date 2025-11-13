@@ -175,4 +175,21 @@ public static class GameConfig
     /// Maximum capacity per resource type in stockpile (0 = unlimited).
     /// </summary>
     public const int STOCKPILE_CAPACITY_PER_RESOURCE = 0; // Unlimited for tech demo
+
+    // === Population Growth Configuration ===
+
+    /// <summary>
+    /// Amount of food required at town hall to spawn a new worker.
+    /// </summary>
+    public const int FOOD_PER_WORKER = 200;
+
+    /// <summary>
+    /// How often the PopulationManager checks growth conditions in seconds.
+    /// </summary>
+    public const float GROWTH_CHECK_INTERVAL = 10.0f;
+
+    /// <summary>
+    /// Amount of food delivered per GrowthFoodTask haul trip.
+    /// </summary>
+    public const int FOOD_PER_HAUL_TRIP = 20;
 }

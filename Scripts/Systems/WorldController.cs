@@ -44,6 +44,11 @@ public partial class WorldController : Node2D
     private Stockpile _stockpile;
 
     /// <summary>
+    /// Reference to the town hall building.
+    /// </summary>
+    private TownHall _townHall;
+
+    /// <summary>
     /// Cached reference to TaskManager.
     /// </summary>
     private TaskManager _taskManager;
@@ -59,6 +64,11 @@ public partial class WorldController : Node2D
     private BuildingManager _buildingManager;
 
     /// <summary>
+    /// Cached reference to PopulationManager.
+    /// </summary>
+    private PopulationManager _populationManager;
+
+    /// <summary>
     /// Random seed for world generation. If 0, uses random seed.
     /// </summary>
     [Export]
@@ -72,6 +82,7 @@ public partial class WorldController : Node2D
         _taskManager = GetNode<TaskManager>("/root/TaskManager");
         _workerManager = GetNode<WorkerManager>("/root/WorkerManager");
         _buildingManager = GetNode<BuildingManager>("/root/BuildingManager");
+        _populationManager = GetNode<PopulationManager>("/root/PopulationManager");
 
         // Get references to child nodes
         TileMapLayer tileMap = GetNode<TileMapLayer>("Terrain/TileMapLayer");
@@ -102,8 +113,9 @@ public partial class WorldController : Node2D
         _camera.SetBounds(WorldData.Width, WorldData.Height);
         _camera.CenterOn(WorldData.GetMapCenter());
 
-        // Find the stockpile (spawned during world generation)
+        // Find the stockpile and town hall (spawned during world generation)
         FindStockpile();
+        FindTownHall();
 
         // Initialize BuildingManager with stockpile reference
         if (_stockpile != null)
@@ -119,6 +131,9 @@ public partial class WorldController : Node2D
 
         // Spawn starter workers
         SpawnStarterWorkers();
+
+        // Initialize PopulationManager
+        InitializePopulationManager();
 
         GD.Print("WorldController: World initialization complete!");
         GD.Print("WorldController: Press F1-F4 to place buildings (F1=House, F2=Sawmill, F3=Mine, F4=Farm)");
@@ -250,6 +265,25 @@ public partial class WorldController : Node2D
     }
 
     /// <summary>
+    /// Finds the town hall building in the Buildings container.
+    /// </summary>
+    private void FindTownHall()
+    {
+        var buildingsContainer = GetNode<Node2D>("Buildings");
+        foreach (var child in buildingsContainer.GetChildren())
+        {
+            if (child is TownHall townHall)
+            {
+                _townHall = townHall;
+                GD.Print($"WorldController: Found town hall at {_townHall.GlobalPosition}");
+                return;
+            }
+        }
+
+        GD.PrintErr("WorldController: Town hall not found!");
+    }
+
+    /// <summary>
     /// Generates gather tasks for all resource nodes on the map.
     /// Note: We DON'T pre-generate all tasks anymore. Workers will find resources dynamically.
     /// This just sets up resource depletion monitoring.
@@ -333,5 +367,35 @@ public partial class WorldController : Node2D
         {
             GD.PushError("WorldController: Buildings container not found");
         }
+    }
+
+    /// <summary>
+    /// Initializes the PopulationManager with required dependencies.
+    /// </summary>
+    private void InitializePopulationManager()
+    {
+        if (_townHall == null)
+        {
+            GD.PushError("WorldController: Cannot initialize PopulationManager - town hall not found");
+            return;
+        }
+
+        if (_stockpile == null)
+        {
+            GD.PushError("WorldController: Cannot initialize PopulationManager - stockpile not found");
+            return;
+        }
+
+        var workersContainer = GetNode<Node2D>("Workers");
+        _populationManager.Initialize(
+            _workerManager,
+            _buildingManager,
+            _taskManager,
+            _townHall,
+            _stockpile,
+            workersContainer
+        );
+
+        GD.Print("WorldController: PopulationManager initialized");
     }
 }
