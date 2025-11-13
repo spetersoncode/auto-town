@@ -85,6 +85,132 @@ public static class GameConfig
     /// </summary>
     public const int DEFAULT_BUILDING_TILE_SIZE = 1;
 
+    // === Building Costs (in resources) ===
+
+    /// <summary>
+    /// Wood cost for House construction.
+    /// </summary>
+    public const int HOUSE_COST_WOOD = 100;
+
+    /// <summary>
+    /// Stone cost for House construction.
+    /// </summary>
+    public const int HOUSE_COST_STONE = 50;
+
+    /// <summary>
+    /// Wood cost for Sawmill construction.
+    /// </summary>
+    public const int SAWMILL_COST_WOOD = 80;
+
+    /// <summary>
+    /// Stone cost for Sawmill construction.
+    /// </summary>
+    public const int SAWMILL_COST_STONE = 40;
+
+    /// <summary>
+    /// Wood cost for Mine construction.
+    /// </summary>
+    public const int MINE_COST_WOOD = 60;
+
+    /// <summary>
+    /// Stone cost for Mine construction.
+    /// </summary>
+    public const int MINE_COST_STONE = 80;
+
+    /// <summary>
+    /// Wood cost for Farm construction.
+    /// </summary>
+    public const int FARM_COST_WOOD = 50;
+
+    /// <summary>
+    /// Stone cost for Farm construction.
+    /// </summary>
+    public const int FARM_COST_STONE = 30;
+
+    /// <summary>
+    /// Wood cost for TownHall construction.
+    /// </summary>
+    public const int TOWNHALL_COST_WOOD = 200;
+
+    /// <summary>
+    /// Stone cost for TownHall construction.
+    /// </summary>
+    public const int TOWNHALL_COST_STONE = 150;
+
+    // === Building Times (in seconds) ===
+
+    /// <summary>
+    /// Time to construct a House.
+    /// </summary>
+    public const float HOUSE_BUILD_TIME = 8.0f;
+
+    /// <summary>
+    /// Time to construct a Sawmill.
+    /// </summary>
+    public const float SAWMILL_BUILD_TIME = 10.0f;
+
+    /// <summary>
+    /// Time to construct a Mine.
+    /// </summary>
+    public const float MINE_BUILD_TIME = 10.0f;
+
+    /// <summary>
+    /// Time to construct a Farm.
+    /// </summary>
+    public const float FARM_BUILD_TIME = 7.0f;
+
+    /// <summary>
+    /// Time to construct a TownHall.
+    /// </summary>
+    public const float TOWNHALL_BUILD_TIME = 20.0f;
+
+    // === Building Functionality ===
+
+    /// <summary>
+    /// Housing capacity provided by each House.
+    /// </summary>
+    public const int HOUSE_CAPACITY = 5;
+
+    /// <summary>
+    /// Amount of resources hauled per trip to construction site.
+    /// </summary>
+    public const int CONSTRUCTION_HAUL_AMOUNT = 20;
+
+    /// <summary>
+    /// Interval between processing task generation (in seconds).
+    /// </summary>
+    public const float PROCESSING_TASK_INTERVAL = 10.0f;
+
+    /// <summary>
+    /// Amount of Wood produced per Sawmill processing task.
+    /// </summary>
+    public const int SAWMILL_WOOD_OUTPUT = 15;
+
+    /// <summary>
+    /// Time to complete a Sawmill processing task.
+    /// </summary>
+    public const float SAWMILL_PROCESS_TIME = 5.0f;
+
+    /// <summary>
+    /// Amount of Stone produced per Mine processing task.
+    /// </summary>
+    public const int MINE_STONE_OUTPUT = 20;
+
+    /// <summary>
+    /// Time to complete a Mine processing task.
+    /// </summary>
+    public const float MINE_PROCESS_TIME = 6.0f;
+
+    /// <summary>
+    /// Amount of Food produced per Farm processing task.
+    /// </summary>
+    public const int FARM_FOOD_OUTPUT = 25;
+
+    /// <summary>
+    /// Time to complete a Farm processing task.
+    /// </summary>
+    public const float FARM_PROCESS_TIME = 4.0f;
+
     // === Game Speed Configuration ===
 
     /// <summary>

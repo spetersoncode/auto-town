@@ -68,14 +68,17 @@ public partial class Worker : CharacterBody2D
         }
         else
         {
-            // Configure navigation agent - simple settings, rely on physics for collision
+            // Configure navigation agent with avoidance for dynamic obstacle avoidance
             _navAgent.MaxSpeed = GameConfig.NAV_AGENT_MAX_SPEED;
             _navAgent.PathDesiredDistance = GameConfig.NAV_AGENT_PATH_DESIRED_DISTANCE;
             _navAgent.TargetDesiredDistance = GameConfig.NAV_AGENT_TARGET_DESIRED_DISTANCE;
             _navAgent.Radius = GameConfig.NAV_AGENT_RADIUS;
 
-            // Disable avoidance - let physics handle obstacles
-            _navAgent.AvoidanceEnabled = false;
+            // Enable avoidance for dynamic worker-to-worker avoidance
+            // This prevents workers from bunching up and getting stuck
+            _navAgent.AvoidanceEnabled = true;
+            _navAgent.AvoidanceLayers = 1; // Workers avoid layer 1
+            _navAgent.AvoidanceMask = 1;   // Workers are on layer 1 for avoidance
 
             // Wait for navigation map to be ready
             CallDeferred(MethodName.CheckNavigationReady);
@@ -105,11 +108,17 @@ public partial class Worker : CharacterBody2D
         _taskManager = GetNode<TaskManager>("/root/TaskManager");
         _resourceManager = GetNode<ResourceManager>("/root/ResourceManager");
 
-        // Collision setup
+        // Collision setup - minimal collision for clicking only
         var collisionShape = new CollisionShape2D();
         var circle = new CircleShape2D { Radius = GameConfig.NAV_AGENT_RADIUS };
         collisionShape.Shape = circle;
         AddChild(collisionShape);
+
+        // Configure collision layers to prevent worker-to-worker collision
+        // Workers are on layer 2, but don't collide with anything (mask = 0)
+        // This prevents getting stuck while still allowing mouse clicks
+        CollisionLayer = 2; // Workers are on layer 2
+        CollisionMask = 0;  // Workers don't collide with anything
 
         SetState(WorkerState.Idle);
     }
@@ -198,12 +207,6 @@ public partial class Worker : CharacterBody2D
 
             var resourceState = gatherTask.ResourceNode.State;
 
-            // Debug log occasionally (every 120 frames = ~2 seconds at 60 FPS)
-            if (Engine.GetProcessFrames() % 120 == 0)
-            {
-                GD.Print($"Worker: Waiting for harvest, resource state: {resourceState}");
-            }
-
             // Check if depleted
             if (resourceState == HarvestableResource.HarvestState.Depleted)
             {
@@ -229,6 +232,50 @@ public partial class Worker : CharacterBody2D
             }
 
             // Otherwise, still BeingHarvested - just wait
+        }
+        else if (_currentTask is BuildTask buildTask)
+        {
+            // Check if build task is still valid
+            if (!buildTask.IsValid())
+            {
+                GD.Print($"Worker: Build task invalid, canceling");
+                _currentTask.Cancel();
+                _currentTask = null;
+                SetState(WorkerState.Idle);
+                return;
+            }
+
+            // Update the build task progress
+            buildTask.OnUpdate(delta);
+
+            // Task will complete itself when finished
+            if (buildTask.State == TaskState.Completed)
+            {
+                _currentTask = null;
+                SetState(WorkerState.Idle);
+            }
+        }
+        else if (_currentTask is ProcessTask processTask)
+        {
+            // Check if process task is still valid
+            if (!processTask.IsValid())
+            {
+                GD.Print($"Worker: Process task invalid, canceling");
+                _currentTask.Cancel();
+                _currentTask = null;
+                SetState(WorkerState.Idle);
+                return;
+            }
+
+            // Update the process task progress
+            processTask.OnUpdate(delta);
+
+            // Task will complete itself when finished
+            if (processTask.State == TaskState.Completed)
+            {
+                _currentTask = null;
+                SetState(WorkerState.Idle);
+            }
         }
     }
 
@@ -374,6 +421,81 @@ public partial class Worker : CharacterBody2D
 
             task.OnStart();
         }
+        else if (task is HaulResourceTask haulTask)
+        {
+            // Validate haul task
+            if (!haulTask.IsValid())
+            {
+                GD.Print($"Worker: Haul task is invalid");
+                return;
+            }
+
+            // Try to assign the task
+            if (!task.TryAssign(this))
+            {
+                GD.Print($"Worker: Failed to assign haul task");
+                return;
+            }
+
+            _currentTask = task;
+            GD.Print($"Worker: Assigned Haul task - {haulTask.Amount} {haulTask.ResourceType}");
+
+            // Start moving to source (stockpile) to pick up resources
+            SetState(WorkerState.Moving);
+            SetDestination(haulTask.SourcePosition);
+
+            task.OnStart();
+        }
+        else if (task is BuildTask buildTask)
+        {
+            // Validate build task
+            if (!buildTask.IsValid())
+            {
+                GD.Print($"Worker: Build task is invalid");
+                return;
+            }
+
+            // Try to assign the task
+            if (!task.TryAssign(this))
+            {
+                GD.Print($"Worker: Failed to assign build task");
+                return;
+            }
+
+            _currentTask = task;
+            GD.Print($"Worker: Assigned Build task at {task.Position}");
+
+            // Start moving to construction site
+            SetState(WorkerState.Moving);
+            SetDestination(task.Position);
+
+            task.OnStart();
+        }
+        else if (task is ProcessTask processTask)
+        {
+            // Validate process task
+            if (!processTask.IsValid())
+            {
+                GD.Print($"Worker: Process task is invalid");
+                return;
+            }
+
+            // Try to assign the task
+            if (!task.TryAssign(this))
+            {
+                GD.Print($"Worker: Failed to assign process task");
+                return;
+            }
+
+            _currentTask = task;
+            GD.Print($"Worker: Assigned Process task at {task.Position}");
+
+            // Start moving to building
+            SetState(WorkerState.Moving);
+            SetDestination(task.Position);
+
+            task.OnStart();
+        }
     }
 
     private void OnReachedDestination()
@@ -409,17 +531,84 @@ public partial class Worker : CharacterBody2D
                     SetDestination(gatherTask.Position);
                 }
             }
+            else if (_currentTask is HaulResourceTask haulTask)
+            {
+                // Reached source (stockpile) to pick up resources
+                GD.Print($"Worker: Reached stockpile to pick up {haulTask.Amount} {haulTask.ResourceType}");
+
+                // Try to withdraw resources from stockpile
+                if (haulTask.TryWithdrawResource(_stockpile))
+                {
+                    // Pick up resources
+                    _data.PickupResource(haulTask.ResourceType, haulTask.Amount);
+                    GD.Print($"Worker: Picked up {haulTask.Amount} {haulTask.ResourceType}");
+
+                    // Now haul to construction site
+                    SetState(WorkerState.Hauling);
+                    SetDestination(haulTask.DestinationPosition);
+                }
+                else
+                {
+                    // Failed to withdraw resources - cancel task
+                    GD.Print($"Worker: Failed to withdraw resources, canceling haul task");
+                    _currentTask.Cancel();
+                    _currentTask = null;
+                    SetState(WorkerState.Idle);
+                }
+            }
+            else if (_currentTask is BuildTask buildTask)
+            {
+                // Reached construction site
+                GD.Print($"Worker: Reached construction site, starting build work");
+                SetState(WorkerState.Working);
+            }
+            else if (_currentTask is ProcessTask processTask)
+            {
+                // Reached building for processing
+                GD.Print($"Worker: Reached building, starting processing work");
+                SetState(WorkerState.Working);
+            }
         }
         else if (_state == WorkerState.Hauling && _currentTask != null)
         {
-            // Reached the stockpile
-            DepositResources();
+            if (_currentTask is GatherTask)
+            {
+                // Reached the stockpile after gathering
+                DepositResources();
 
-            // Complete the task
-            _currentTask.Complete();
-            _currentTask = null;
+                // Complete the task
+                _currentTask.Complete();
+                _currentTask = null;
 
-            SetState(WorkerState.Idle);
+                SetState(WorkerState.Idle);
+            }
+            else if (_currentTask is HaulResourceTask haulTask)
+            {
+                // Reached construction site with resources
+                GD.Print($"Worker: Reached construction site, delivering {_data.CarriedAmount} {_data.CarriedResource}");
+
+                // Deliver resources to construction site
+                if (haulTask.TryDeliverResource())
+                {
+                    // Clear carried resources
+                    _data.DropResource();
+                    GD.Print($"Worker: Delivered resources to construction site");
+
+                    // Complete the haul task
+                    _currentTask.Complete();
+                    _currentTask = null;
+
+                    SetState(WorkerState.Idle);
+                }
+                else
+                {
+                    GD.Print($"Worker: Failed to deliver resources, canceling task");
+                    _data.DropResource();
+                    _currentTask.Cancel();
+                    _currentTask = null;
+                    SetState(WorkerState.Idle);
+                }
+            }
         }
     }
 

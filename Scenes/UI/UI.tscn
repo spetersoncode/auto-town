@@ -1,8 +1,8 @@
 [gd_scene load_steps=4 format=3 uid="uid://bos6dnp8ft4bi"]
 
-[ext_resource type="Script" path="res://Scripts/UI/GameUI.cs" id="1_ui"]
-[ext_resource type="Script" path="res://Scripts/UI/WorkerSelectionUI.cs" id="2_worker_ui"]
-[ext_resource type="Script" path="res://Scripts/UI/ResourceDisplayUI.cs" id="3_resource_ui"]
+[ext_resource type="Script" uid="uid://5qp85y1ac72x" path="res://Scripts/UI/GameUI.cs" id="1_ui"]
+[ext_resource type="Script" uid="uid://1efohpvji2w8" path="res://Scripts/UI/WorkerSelectionUI.cs" id="2_worker_ui"]
+[ext_resource type="Script" uid="uid://g45pfoavb8pu" path="res://Scripts/UI/ResourceDisplayUI.cs" id="3_resource_ui"]
 
 [node name="UI" type="CanvasLayer"]
 script = ExtResource("1_ui")

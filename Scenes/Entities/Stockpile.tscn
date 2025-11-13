@@ -1,6 +1,6 @@
-[gd_scene load_steps=2 format=3 uid="uid://dxb7yhm8k4p5y"]
+[gd_scene load_steps=2 format=3 uid="uid://ckfywctv2glqu"]
 
-[ext_resource type="Script" path="res://Scripts/Entities/Stockpile.cs" id="1_stockpile"]
+[ext_resource type="Script" uid="uid://bw1bh50aw1o7t" path="res://Scripts/Entities/Stockpile.cs" id="1_stockpile"]
 
 [node name="Stockpile" type="Node2D"]
 script = ExtResource("1_stockpile")

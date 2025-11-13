@@ -21,6 +21,7 @@ GameManager="*res://Scripts/Core/GameManager.cs"
 ResourceManager="*res://Scripts/Systems/ResourceManager.cs"
 TaskManager="*res://Scripts/Systems/TaskManager.cs"
 WorkerManager="*res://Scripts/Systems/WorkerManager.cs"
+BuildingManager="*res://Scripts/Systems/BuildingManager.cs"
 
 [dotnet]
 

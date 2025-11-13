@@ -3,6 +3,7 @@ using System.Linq;
 using autotown.Core;
 using autotown.Data;
 using autotown.Entities;
+using autotown.UI;
 
 namespace autotown.Systems;
 
@@ -48,6 +49,11 @@ public partial class WorldController : Node2D
     private WorkerManager _workerManager;
 
     /// <summary>
+    /// Cached reference to BuildingManager.
+    /// </summary>
+    private BuildingManager _buildingManager;
+
+    /// <summary>
     /// Random seed for world generation. If 0, uses random seed.
     /// </summary>
     [Export]
@@ -60,6 +66,7 @@ public partial class WorldController : Node2D
         // Cache autoload references
         _taskManager = GetNode<TaskManager>("/root/TaskManager");
         _workerManager = GetNode<WorkerManager>("/root/WorkerManager");
+        _buildingManager = GetNode<BuildingManager>("/root/BuildingManager");
 
         // Get references to child nodes
         TileMapLayer tileMap = GetNode<TileMapLayer>("Terrain/TileMapLayer");
@@ -85,6 +92,15 @@ public partial class WorldController : Node2D
         // Find the stockpile (spawned during world generation)
         FindStockpile();
 
+        // Initialize BuildingManager with stockpile reference
+        if (_stockpile != null)
+        {
+            _buildingManager.SetMainStockpile(_stockpile);
+        }
+
+        // Setup building placement UI
+        SetupBuildingPlacementUI();
+
         // Generate gather tasks for all resource nodes
         GenerateGatherTasks();
 
@@ -92,6 +108,7 @@ public partial class WorldController : Node2D
         SpawnStarterWorkers();
 
         GD.Print("WorldController: World initialization complete!");
+        GD.Print("WorldController: Press F1-F4 to place buildings (F1=House, F2=Sawmill, F3=Mine, F4=Farm)");
     }
 
     /// <summary>
@@ -281,5 +298,27 @@ public partial class WorldController : Node2D
     {
         _taskManager.CancelTasksForResource(resource);
         GD.Print($"WorldController: Resource depleted, cancelled related tasks");
+    }
+
+    /// <summary>
+    /// Sets up the building placement UI system.
+    /// </summary>
+    private void SetupBuildingPlacementUI()
+    {
+        var placementUI = new BuildingPlacementUI();
+        AddChild(placementUI);
+
+        // Set camera and buildings container references
+        placementUI.SetCamera(_camera);
+        var buildingsContainer = GetNodeOrNull<Node2D>("Buildings");
+        if (buildingsContainer != null)
+        {
+            placementUI.SetBuildingsContainer(buildingsContainer);
+            GD.Print("WorldController: Building placement UI initialized");
+        }
+        else
+        {
+            GD.PushError("WorldController: Buildings container not found");
+        }
     }
 }

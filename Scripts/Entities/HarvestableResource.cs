@@ -141,16 +141,7 @@ public partial class HarvestableResource : Node2D
         // Update harvest progress if being harvested
         if (_state == HarvestState.BeingHarvested && HarvestDuration > 0)
         {
-            float oldProgress = _harvestProgress;
             _harvestProgress += (float)delta / HarvestDuration;
-
-            // Only log at 25% intervals to reduce spam
-            int oldQuarter = (int)(oldProgress * 4);
-            int newQuarter = (int)(_harvestProgress * 4);
-            if (newQuarter > oldQuarter && newQuarter <= 4)
-            {
-                GD.Print($"[HarvestableResource] {ResourceType} harvesting... progress: {_harvestProgress * 100:F0}%");
-            }
 
             if (_harvestProgress >= 1.0f)
             {

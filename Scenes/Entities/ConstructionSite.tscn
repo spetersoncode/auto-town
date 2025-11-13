@@ -1,0 +1,10 @@
+[gd_scene load_steps=2 format=3 uid="uid://uf6fp2gsui6i"]
+
+[ext_resource type="Script" uid="uid://eumqo6u03c5o" path="res://Scripts/Entities/ConstructionSite.cs" id="1"]
+
+[node name="ConstructionSite" type="Node2D"]
+script = ExtResource("1")
+
+[node name="Sprite" type="Polygon2D" parent="."]
+color = Color(0.6, 0.4, 0.8, 1)
+polygon = PackedVector2Array(-16, -16, 16, -16, 16, 16, -16, 16)

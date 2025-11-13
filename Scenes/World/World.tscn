@@ -1,7 +1,7 @@
 [gd_scene load_steps=3 format=3 uid="uid://bpq2mfyamjj4a"]
 
-[ext_resource type="Script" path="res://Scripts/Systems/WorldController.cs" id="1_world"]
-[ext_resource type="Script" path="res://Scripts/Core/CameraController.cs" id="2_camera"]
+[ext_resource type="Script" uid="uid://d1j6twp4nyeb2" path="res://Scripts/Systems/WorldController.cs" id="1_world"]
+[ext_resource type="Script" uid="uid://d3t663y1t0fni" path="res://Scripts/Core/CameraController.cs" id="2_camera"]
 
 [node name="World" type="Node2D"]
 script = ExtResource("1_world")

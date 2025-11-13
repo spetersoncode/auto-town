@@ -116,6 +116,7 @@ public abstract partial class Task : GodotObject
     /// </summary>
     public virtual void Complete()
     {
+        OnComplete();  // Call the completion logic first
         SetState(TaskState.Completed);
         EmitSignal(SignalName.TaskCompleted, this);
     }
