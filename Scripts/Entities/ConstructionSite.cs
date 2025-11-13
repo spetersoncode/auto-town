@@ -1,6 +1,7 @@
 using Godot;
 using autotown.Data;
 using autotown.Core;
+using autotown.Systems;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -256,6 +257,10 @@ public partial class ConstructionSite : Node2D
         // Add to the same parent as the construction site
         var parent = GetParent();
         parent.CallDeferred(Node.MethodName.AddChild, building);
+
+        // Register the building with BuildingManager
+        var buildingManager = GetNode<BuildingManager>("/root/BuildingManager");
+        buildingManager.CallDeferred(nameof(BuildingManager.RegisterBuilding), building);
 
         // Activate the building
         building.CallDeferred(nameof(Building.OnConstructionComplete));
