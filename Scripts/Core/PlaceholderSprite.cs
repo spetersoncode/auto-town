@@ -40,7 +40,7 @@ public static class PlaceholderSprite
     /// <param name="resourceType">Type of resource</param>
     /// <param name="size">Size of the sprite (default: 16x16)</param>
     /// <returns>ColorRect representing the resource</returns>
-    public static ColorRect CreateResourceSprite(ResourceType resourceType, float size = 16f)
+    public static ColorRect CreateResourceSprite(ResourceType resourceType, float size = GameConfig.RESOURCE_SPRITE_SIZE)
     {
         Color color = resourceType switch
         {
@@ -58,7 +58,7 @@ public static class PlaceholderSprite
     /// </summary>
     /// <param name="size">Size of the sprite (default: 16x16)</param>
     /// <returns>ColorRect representing the worker</returns>
-    public static ColorRect CreateWorkerSprite(float size = 16f)
+    public static ColorRect CreateWorkerSprite(float size = GameConfig.WORKER_SPRITE_SIZE)
     {
         return CreateRect(new Vector2(size, size), WorkerColor);
     }
@@ -69,7 +69,7 @@ public static class PlaceholderSprite
     /// <param name="width">Width of the building sprite</param>
     /// <param name="height">Height of the building sprite</param>
     /// <returns>ColorRect representing the building</returns>
-    public static ColorRect CreateBuildingSprite(float width = 32f, float height = 32f)
+    public static ColorRect CreateBuildingSprite(float width = GameConfig.BUILDING_SPRITE_WIDTH, float height = GameConfig.BUILDING_SPRITE_HEIGHT)
     {
         return CreateRect(new Vector2(width, height), BuildingColor);
     }

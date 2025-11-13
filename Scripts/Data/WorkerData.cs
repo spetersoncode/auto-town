@@ -1,3 +1,5 @@
+using autotown.Core;
+
 namespace autotown.Data;
 
 /// <summary>
@@ -50,8 +52,8 @@ public class WorkerData
         State = WorkerState.Idle;
         CarriedResource = null;
         CarriedAmount = 0;
-        MovementSpeed = 100.0f; // pixels per second
-        Efficiency = 1.0f;
+        MovementSpeed = GameConfig.DEFAULT_WORKER_SPEED;
+        Efficiency = GameConfig.DEFAULT_WORKER_EFFICIENCY;
     }
 
     /// <summary>

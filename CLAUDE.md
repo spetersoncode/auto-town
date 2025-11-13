@@ -75,6 +75,38 @@ When I create a new scene or script, I will remind you to:
 - XML documentation for public APIs
 - Follow C# and Godot naming conventions
 
+### Code Quality Standards
+
+**Avoid Magic Numbers:**
+- Replace hard-coded numeric literals with named constants or exported variables
+- Use `const` for fixed values that never change
+- Use `[Export]` for designer-tweakable parameters
+- Use static configuration classes for game-wide settings
+- Self-documenting variable names reduce need for comments
+
+**Examples:**
+```csharp
+// ❌ Bad - Magic numbers
+if (distance < 50) { }
+worker.Speed = 100;
+
+// ✅ Good - Named constants
+private const float INTERACTION_RANGE = 50f;
+worker.Speed = DEFAULT_WORKER_SPEED;
+
+// ✅✅ Best - Exported for designer control
+[Export] public float InteractionRange { get; set; } = 50f;
+```
+
+**When Constants Are Acceptable:**
+- Self-documenting mathematical operations (e.g., `degrees * Mathf.Pi / 180f`)
+- Single-use conversions where context is clear (e.g., `size / 2`)
+
+**Prefer Configuration Over Hard-Coding:**
+- Export parameters to inspector for runtime tweaking
+- Group related constants in static config classes
+- Keep data-driven values separate from logic
+
 ## Version Control
 
 ### Conventional Commits

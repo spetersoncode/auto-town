@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using autotown.Core;
 
 namespace autotown.Data;
 
@@ -35,10 +36,10 @@ public class BuildingData
     {
         Name = string.Empty;
         Description = string.Empty;
-        BuildTime = 5.0f;
+        BuildTime = GameConfig.DEFAULT_BUILD_TIME;
         Cost = new Dictionary<ResourceType, int>();
-        Width = 1;
-        Height = 1;
+        Width = GameConfig.DEFAULT_BUILDING_TILE_SIZE;
+        Height = GameConfig.DEFAULT_BUILDING_TILE_SIZE;
     }
 
     /// <summary>

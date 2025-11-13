@@ -35,7 +35,7 @@ public partial class GameManager : Node
 
     // Properties
     private GameState _currentState = GameState.Playing;
-    private float _gameSpeed = 1.0f;
+    private float _gameSpeed = GameConfig.GAME_SPEED_NORMAL;
 
     /// <summary>Gets the current game state</summary>
     public GameState CurrentState => _currentState;
@@ -46,7 +46,7 @@ public partial class GameManager : Node
         get => _gameSpeed;
         set
         {
-            _gameSpeed = Mathf.Clamp(value, 0.0f, 3.0f);
+            _gameSpeed = Mathf.Clamp(value, GameConfig.MIN_GAME_SPEED, GameConfig.MAX_GAME_SPEED);
             Engine.TimeScale = _gameSpeed;
             GD.Print($"GameManager: Game speed set to {_gameSpeed}x");
             EmitSignal(SignalName.GameSpeedChanged, _gameSpeed);
@@ -72,7 +72,7 @@ public partial class GameManager : Node
     private void Initialize()
     {
         _currentState = GameState.Playing;
-        _gameSpeed = 1.0f;
+        _gameSpeed = GameConfig.GAME_SPEED_NORMAL;
         Engine.TimeScale = _gameSpeed;
 
         // Future: Initialize other manager systems here
@@ -165,13 +165,13 @@ public partial class GameManager : Node
                 switch (keyEvent.Keycode)
                 {
                     case Key.Key1:
-                        GameSpeed = 1.0f;
+                        GameSpeed = GameConfig.GAME_SPEED_NORMAL;
                         break;
                     case Key.Key2:
-                        GameSpeed = 2.0f;
+                        GameSpeed = GameConfig.GAME_SPEED_FAST;
                         break;
                     case Key.Key3:
-                        GameSpeed = 3.0f;
+                        GameSpeed = GameConfig.GAME_SPEED_FASTER;
                         break;
                 }
             }
