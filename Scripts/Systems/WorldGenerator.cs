@@ -326,8 +326,8 @@ public class WorldGenerator
 
         Vector2 centerPos = worldData.GetMapCenter();
 
-        // Offset from TownHall (3 tiles to the right)
-        Vector2 stockpilePos = centerPos + new Vector2(_config.TileSize * 3, 0);
+        // Offset from TownHall (8 tiles to the right for better spacing)
+        Vector2 stockpilePos = centerPos + new Vector2(_config.TileSize * 8, 0);
 
         // Load stockpile scene
         PackedScene stockpileScene = GD.Load<PackedScene>("res://Scenes/Entities/Stockpile.tscn");

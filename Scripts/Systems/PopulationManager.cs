@@ -254,8 +254,12 @@ public partial class PopulationManager : Node
             return;
         }
 
-        // Spawn the worker at town hall with no job (JobType.None)
-        var newWorker = _workerManager.SpawnWorker(_townHall.GlobalPosition, JobType.None, _workersContainer);
+        // Spawn the worker next to town hall (not inside it) with no job (JobType.None)
+        // Offset by 48 pixels (3 tiles) to the left so workers appear adjacent
+        Vector2 spawnOffset = new Vector2(-48, 0);
+        Vector2 spawnPosition = _townHall.GlobalPosition + spawnOffset;
+
+        var newWorker = _workerManager.SpawnWorker(spawnPosition, JobType.None, _workersContainer);
         if (newWorker == null)
         {
             GD.PrintErr("[PopulationManager] Failed to spawn new worker");
