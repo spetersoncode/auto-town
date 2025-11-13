@@ -776,7 +776,7 @@ public partial class Worker : CharacterBody2D
         _sprite.Color = _data.Job switch
         {
             JobType.Lumberjack => new Color(0.13f, 0.55f, 0.13f), // Green (wood)
-            JobType.Miner => new Color(0.5f, 0.5f, 0.5f), // Gray (stone)
+            JobType.Miner => new Color(0.6f, 0.4f, 0.2f), // Brown/bronze (distinct from gray stone)
             JobType.Forager => new Color(1.0f, 0.84f, 0.0f), // Yellow (food)
             JobType.Builder => new Color(1.0f, 0.5f, 0.0f), // Orange (distinct from red buildings)
             _ => new Color(0.3f, 0.6f, 1.0f) // Blue (default/idle)

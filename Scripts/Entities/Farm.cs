@@ -81,7 +81,7 @@ public partial class Farm : Building
             ResourceType.Food,
             _resource.ProductionOutput,
             _resource.ProductionTime,
-            new[] { JobType.Farmer }
+            new[] { JobType.Forager }  // Foragers can work farms until Farmer job is implemented
         );
 
         // Subscribe to task completion to track active tasks

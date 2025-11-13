@@ -43,7 +43,7 @@ layout_mode = 2
 
 [node name="TitleLabel" type="Label" parent="MarginContainer/VBoxContainer/TopBarPanel/TopBarMargin/TopBar"]
 layout_mode = 2
-text = "Auto-Town - Phase 4"
+text = "Auto-Town"
 
 [node name="Separator0" type="Label" parent="MarginContainer/VBoxContainer/TopBarPanel/TopBarMargin/TopBar"]
 layout_mode = 2

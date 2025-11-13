@@ -18,7 +18,7 @@ public partial class WorkerStatsUI : HBoxContainer
     private readonly Dictionary<JobType, Color> _jobColors = new Dictionary<JobType, Color>
     {
         { JobType.Lumberjack, new Color(0.05f, 0.55f, 0.05f) }, // Green (darker for better readability on white bg)
-        { JobType.Miner, new Color(0.5f, 0.5f, 0.5f) },          // Gray
+        { JobType.Miner, new Color(0.6f, 0.4f, 0.2f) },          // Brown/bronze (distinct from gray stone)
         { JobType.Forager, new Color(1f, 0.84f, 0f) },           // Gold/Yellow
         { JobType.Builder, new Color(1f, 0.5f, 0f) },            // Orange
         { JobType.None, new Color(0.3f, 0.6f, 1f) },             // Blue (idle/no job)
