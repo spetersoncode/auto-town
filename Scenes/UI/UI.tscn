@@ -1,8 +1,12 @@
-[gd_scene load_steps=4 format=3 uid="uid://bos6dnp8ft4bi"]
+[gd_scene load_steps=8 format=3 uid="uid://bos6dnp8ft4bi"]
 
 [ext_resource type="Script" uid="uid://5qp85y1ac72x" path="res://Scripts/UI/GameUI.cs" id="1_ui"]
 [ext_resource type="Script" uid="uid://1efohpvji2w8" path="res://Scripts/UI/WorkerSelectionUI.cs" id="2_worker_ui"]
 [ext_resource type="Script" uid="uid://g45pfoavb8pu" path="res://Scripts/UI/ResourceDisplayUI.cs" id="3_resource_ui"]
+[ext_resource type="Script" path="res://Scripts/UI/PopulationUI.cs" id="4_population_ui"]
+[ext_resource type="Script" path="res://Scripts/UI/WorkerStatsUI.cs" id="5_worker_stats_ui"]
+[ext_resource type="Script" path="res://Scripts/UI/ConstructionQueueUI.cs" id="6_construction_queue_ui"]
+[ext_resource type="Script" path="res://Scripts/UI/HelpOverlayUI.cs" id="7_help_overlay_ui"]
 
 [node name="UI" type="CanvasLayer"]
 script = ExtResource("1_ui")
@@ -18,167 +22,81 @@ theme_override_constants/margin_bottom = 10
 [node name="VBoxContainer" type="VBoxContainer" parent="MarginContainer"]
 layout_mode = 2
 
-[node name="TopBar" type="HBoxContainer" parent="MarginContainer/VBoxContainer"]
+[node name="TopBarPanel" type="PanelContainer" parent="MarginContainer/VBoxContainer"]
+self_modulate = Color(1, 1, 1, 0)
 layout_mode = 2
 
-[node name="TitleLabel" type="Label" parent="MarginContainer/VBoxContainer/TopBar"]
+[node name="TopBarBackground" type="ColorRect" parent="MarginContainer/VBoxContainer/TopBarPanel"]
+layout_mode = 2
+color = Color(0, 0, 0, 0.7)
+mouse_filter = 2
+
+[node name="TopBarMargin" type="MarginContainer" parent="MarginContainer/VBoxContainer/TopBarPanel"]
+layout_mode = 2
+theme_override_constants/margin_left = 10
+theme_override_constants/margin_top = 5
+theme_override_constants/margin_right = 10
+theme_override_constants/margin_bottom = 5
+
+[node name="TopBar" type="HBoxContainer" parent="MarginContainer/VBoxContainer/TopBarPanel/TopBarMargin"]
+layout_mode = 2
+
+[node name="TitleLabel" type="Label" parent="MarginContainer/VBoxContainer/TopBarPanel/TopBarMargin/TopBar"]
 layout_mode = 2
 text = "Auto-Town - Phase 4"
 
-[node name="Spacer" type="Control" parent="MarginContainer/VBoxContainer/TopBar"]
+[node name="Separator0" type="Label" parent="MarginContainer/VBoxContainer/TopBarPanel/TopBarMargin/TopBar"]
+layout_mode = 2
+text = "|"
+
+[node name="ResourceDisplay" type="HBoxContainer" parent="MarginContainer/VBoxContainer/TopBarPanel/TopBarMargin/TopBar"]
+layout_mode = 2
+script = ExtResource("3_resource_ui")
+
+[node name="Separator1" type="Label" parent="MarginContainer/VBoxContainer/TopBarPanel/TopBarMargin/TopBar"]
+layout_mode = 2
+text = "|"
+
+[node name="PopulationDisplay" type="Label" parent="MarginContainer/VBoxContainer/TopBarPanel/TopBarMargin/TopBar"]
+layout_mode = 2
+script = ExtResource("4_population_ui")
+
+[node name="Separator2" type="Label" parent="MarginContainer/VBoxContainer/TopBarPanel/TopBarMargin/TopBar"]
+layout_mode = 2
+text = "|"
+
+[node name="WorkerStatsDisplay" type="HBoxContainer" parent="MarginContainer/VBoxContainer/TopBarPanel/TopBarMargin/TopBar"]
+layout_mode = 2
+script = ExtResource("5_worker_stats_ui")
+
+[node name="Separator3" type="Label" parent="MarginContainer/VBoxContainer/TopBarPanel/TopBarMargin/TopBar"]
+layout_mode = 2
+text = "|"
+
+[node name="ConstructionQueueDisplay" type="Label" parent="MarginContainer/VBoxContainer/TopBarPanel/TopBarMargin/TopBar"]
+layout_mode = 2
+script = ExtResource("6_construction_queue_ui")
+
+[node name="Spacer" type="Control" parent="MarginContainer/VBoxContainer/TopBarPanel/TopBarMargin/TopBar"]
 layout_mode = 2
 size_flags_horizontal = 3
 
-[node name="GameSpeedLabel" type="Label" parent="MarginContainer/VBoxContainer/TopBar"]
+[node name="GameSpeedLabel" type="Label" parent="MarginContainer/VBoxContainer/TopBarPanel/TopBarMargin/TopBar"]
 layout_mode = 2
 text = "Speed: 1.0x"
 
-[node name="LegendPanel" type="PanelContainer" parent="."]
-offset_left = 10.0
-offset_top = 460.0
-offset_right = 210.0
-offset_bottom = 638.0
-
-[node name="VBoxContainer" type="VBoxContainer" parent="LegendPanel"]
+[node name="Separator4" type="Label" parent="MarginContainer/VBoxContainer/TopBarPanel/TopBarMargin/TopBar"]
 layout_mode = 2
+text = "|"
 
-[node name="LegendTitle" type="Label" parent="LegendPanel/VBoxContainer"]
+[node name="HelpButton" type="Button" parent="MarginContainer/VBoxContainer/TopBarPanel/TopBarMargin/TopBar"]
 layout_mode = 2
-text = "Legend"
-horizontal_alignment = 1
-
-[node name="HSeparator" type="HSeparator" parent="LegendPanel/VBoxContainer"]
-layout_mode = 2
-
-[node name="TreeRow" type="HBoxContainer" parent="LegendPanel/VBoxContainer"]
-layout_mode = 2
-
-[node name="TreeColor" type="ColorRect" parent="LegendPanel/VBoxContainer/TreeRow"]
-custom_minimum_size = Vector2(16, 16)
-layout_mode = 2
-color = Color(0.13, 0.55, 0.13, 1)
-
-[node name="TreeLabel" type="Label" parent="LegendPanel/VBoxContainer/TreeRow"]
-layout_mode = 2
-text = "  Trees (Wood)"
-
-[node name="StoneRow" type="HBoxContainer" parent="LegendPanel/VBoxContainer"]
-layout_mode = 2
-
-[node name="StoneColor" type="ColorRect" parent="LegendPanel/VBoxContainer/StoneRow"]
-custom_minimum_size = Vector2(16, 16)
-layout_mode = 2
-color = Color(0.5, 0.5, 0.5, 1)
-
-[node name="StoneLabel" type="Label" parent="LegendPanel/VBoxContainer/StoneRow"]
-layout_mode = 2
-text = "  Stone (Rock)"
-
-[node name="ForageRow" type="HBoxContainer" parent="LegendPanel/VBoxContainer"]
-layout_mode = 2
-
-[node name="ForageColor" type="ColorRect" parent="LegendPanel/VBoxContainer/ForageRow"]
-custom_minimum_size = Vector2(16, 16)
-layout_mode = 2
-color = Color(1, 0.84, 0, 1)
-
-[node name="ForageLabel" type="Label" parent="LegendPanel/VBoxContainer/ForageRow"]
-layout_mode = 2
-text = "  Berries (Food)"
-
-[node name="BuildingRow" type="HBoxContainer" parent="LegendPanel/VBoxContainer"]
-layout_mode = 2
-
-[node name="BuildingColor" type="ColorRect" parent="LegendPanel/VBoxContainer/BuildingRow"]
-custom_minimum_size = Vector2(16, 16)
-layout_mode = 2
-color = Color(0.8, 0.2, 0.2, 1)
-
-[node name="BuildingLabel" type="Label" parent="LegendPanel/VBoxContainer/BuildingRow"]
-layout_mode = 2
-text = "  TownHall"
-
-[node name="WorkerRow" type="HBoxContainer" parent="LegendPanel/VBoxContainer"]
-layout_mode = 2
-
-[node name="WorkerColor" type="ColorRect" parent="LegendPanel/VBoxContainer/WorkerRow"]
-custom_minimum_size = Vector2(16, 16)
-layout_mode = 2
-color = Color(0.3, 0.6, 1, 1)
-
-[node name="WorkerLabel" type="Label" parent="LegendPanel/VBoxContainer/WorkerRow"]
-layout_mode = 2
-text = "  Workers (●)"
-
-[node name="ResourceDisplayPanel" type="PanelContainer" parent="."]
-offset_left = 10.0
-offset_top = 50.0
-offset_right = 210.0
-offset_bottom = 150.0
-script = ExtResource("3_resource_ui")
-
-[node name="VBoxContainer" type="VBoxContainer" parent="ResourceDisplayPanel"]
-layout_mode = 2
-
-[node name="TitleLabel" type="Label" parent="ResourceDisplayPanel/VBoxContainer"]
-layout_mode = 2
-text = "Resources"
-horizontal_alignment = 1
-
-[node name="HSeparator" type="HSeparator" parent="ResourceDisplayPanel/VBoxContainer"]
-layout_mode = 2
-
-[node name="WoodRow" type="HBoxContainer" parent="ResourceDisplayPanel/VBoxContainer"]
-layout_mode = 2
-
-[node name="WoodColor" type="ColorRect" parent="ResourceDisplayPanel/VBoxContainer/WoodRow"]
-custom_minimum_size = Vector2(16, 16)
-layout_mode = 2
-color = Color(0.13, 0.55, 0.13, 1)
-
-[node name="WoodText" type="Label" parent="ResourceDisplayPanel/VBoxContainer/WoodRow"]
-layout_mode = 2
-text = "  Wood: "
-
-[node name="WoodLabel" type="Label" parent="ResourceDisplayPanel/VBoxContainer/WoodRow"]
-layout_mode = 2
-text = "0"
-
-[node name="StoneRow" type="HBoxContainer" parent="ResourceDisplayPanel/VBoxContainer"]
-layout_mode = 2
-
-[node name="StoneColor" type="ColorRect" parent="ResourceDisplayPanel/VBoxContainer/StoneRow"]
-custom_minimum_size = Vector2(16, 16)
-layout_mode = 2
-color = Color(0.5, 0.5, 0.5, 1)
-
-[node name="StoneText" type="Label" parent="ResourceDisplayPanel/VBoxContainer/StoneRow"]
-layout_mode = 2
-text = "  Stone: "
-
-[node name="StoneLabel" type="Label" parent="ResourceDisplayPanel/VBoxContainer/StoneRow"]
-layout_mode = 2
-text = "0"
-
-[node name="FoodRow" type="HBoxContainer" parent="ResourceDisplayPanel/VBoxContainer"]
-layout_mode = 2
-
-[node name="FoodColor" type="ColorRect" parent="ResourceDisplayPanel/VBoxContainer/FoodRow"]
-custom_minimum_size = Vector2(16, 16)
-layout_mode = 2
-color = Color(1, 0.84, 0, 1)
-
-[node name="FoodText" type="Label" parent="ResourceDisplayPanel/VBoxContainer/FoodRow"]
-layout_mode = 2
-text = "  Food: "
-
-[node name="FoodLabel" type="Label" parent="ResourceDisplayPanel/VBoxContainer/FoodRow"]
-layout_mode = 2
-text = "0"
+text = "?"
+tooltip_text = "Show Controls (Esc to close)"
 
 [node name="WorkerSelectionPanel" type="PanelContainer" parent="."]
-offset_left = 942.0
-offset_top = 460.0
+offset_left = 952.0
+offset_top = 548.0
 offset_right = 1142.0
 offset_bottom = 638.0
 script = ExtResource("2_worker_ui")
@@ -190,9 +108,113 @@ layout_mode = 2
 layout_mode = 2
 text = "No worker selected"
 
-[node name="HSeparator" type="HSeparator" parent="WorkerSelectionPanel/VBoxContainer"]
+[node name="HelpOverlay" type="Control" parent="."]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("7_help_overlay_ui")
+
+[node name="Background" type="ColorRect" parent="HelpOverlay"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0, 0, 0, 0.7)
+
+[node name="HelpPanel" type="PanelContainer" parent="HelpOverlay"]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -200.0
+offset_top = -180.0
+offset_right = 200.0
+offset_bottom = 180.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="MarginContainer" type="MarginContainer" parent="HelpOverlay/HelpPanel"]
+layout_mode = 2
+theme_override_constants/margin_left = 20
+theme_override_constants/margin_top = 20
+theme_override_constants/margin_right = 20
+theme_override_constants/margin_bottom = 20
+
+[node name="VBoxContainer" type="VBoxContainer" parent="HelpOverlay/HelpPanel/MarginContainer"]
+layout_mode = 2
+theme_override_constants/separation = 10
+
+[node name="TitleLabel" type="Label" parent="HelpOverlay/HelpPanel/MarginContainer/VBoxContainer"]
+layout_mode = 2
+text = "CONTROLS"
+horizontal_alignment = 1
+
+[node name="HSeparator" type="HSeparator" parent="HelpOverlay/HelpPanel/MarginContainer/VBoxContainer"]
 layout_mode = 2
 
-[node name="InstructionsLabel" type="Label" parent="WorkerSelectionPanel/VBoxContainer"]
+[node name="WorkerSection" type="VBoxContainer" parent="HelpOverlay/HelpPanel/MarginContainer/VBoxContainer"]
 layout_mode = 2
-text = "Instructions"
+theme_override_constants/separation = 5
+
+[node name="WorkerTitle" type="Label" parent="HelpOverlay/HelpPanel/MarginContainer/VBoxContainer/WorkerSection"]
+layout_mode = 2
+text = "Workers:"
+
+[node name="WorkerControls" type="Label" parent="HelpOverlay/HelpPanel/MarginContainer/VBoxContainer/WorkerSection"]
+layout_mode = 2
+text = "  Click worker to select, numbers to assign job
+  1 = Lumberjack
+  2 = Miner
+  3 = Forager
+  4 = Builder
+  0 = Idle"
+
+[node name="Spacer1" type="Control" parent="HelpOverlay/HelpPanel/MarginContainer/VBoxContainer"]
+custom_minimum_size = Vector2(0, 10)
+layout_mode = 2
+
+[node name="BuildingSection" type="VBoxContainer" parent="HelpOverlay/HelpPanel/MarginContainer/VBoxContainer"]
+layout_mode = 2
+theme_override_constants/separation = 5
+
+[node name="BuildingTitle" type="Label" parent="HelpOverlay/HelpPanel/MarginContainer/VBoxContainer/BuildingSection"]
+layout_mode = 2
+text = "Buildings:"
+
+[node name="BuildingControls" type="Label" parent="HelpOverlay/HelpPanel/MarginContainer/VBoxContainer/BuildingSection"]
+layout_mode = 2
+text = "  F1 = House
+  F2 = Sawmill
+  F3 = Mine
+  F4 = Farm"
+
+[node name="Spacer2" type="Control" parent="HelpOverlay/HelpPanel/MarginContainer/VBoxContainer"]
+custom_minimum_size = Vector2(0, 10)
+layout_mode = 2
+
+[node name="GameSpeedSection" type="VBoxContainer" parent="HelpOverlay/HelpPanel/MarginContainer/VBoxContainer"]
+layout_mode = 2
+theme_override_constants/separation = 5
+
+[node name="GameSpeedTitle" type="Label" parent="HelpOverlay/HelpPanel/MarginContainer/VBoxContainer/GameSpeedSection"]
+layout_mode = 2
+text = "Game Speed:"
+
+[node name="GameSpeedControls" type="Label" parent="HelpOverlay/HelpPanel/MarginContainer/VBoxContainer/GameSpeedSection"]
+layout_mode = 2
+text = "  Tab = Cycle speed"
+
+[node name="HSeparator2" type="HSeparator" parent="HelpOverlay/HelpPanel/MarginContainer/VBoxContainer"]
+layout_mode = 2
+
+[node name="CloseLabel" type="Label" parent="HelpOverlay/HelpPanel/MarginContainer/VBoxContainer"]
+layout_mode = 2
+text = "Click anywhere or press Esc to close"
+horizontal_alignment = 1

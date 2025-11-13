@@ -6,13 +6,12 @@ using autotown.Systems;
 namespace autotown.UI;
 
 /// <summary>
-/// UI panel that displays information about the currently selected worker
-/// and allows job assignment via keyboard shortcuts.
+/// UI panel that displays information about the currently selected worker.
+/// Job assignment is done via keyboard shortcuts (1-4, 0).
 /// </summary>
 public partial class WorkerSelectionUI : PanelContainer
 {
     private Label _workerInfoLabel;
-    private Label _instructionsLabel;
     private WorkerManager _workerManager;
     private Worker _currentWorker;
 
@@ -21,12 +20,8 @@ public partial class WorkerSelectionUI : PanelContainer
         // Get WorkerManager reference
         _workerManager = GetNode<WorkerManager>("/root/WorkerManager");
 
-        // Get child labels
+        // Get child label
         _workerInfoLabel = GetNode<Label>("VBoxContainer/WorkerInfoLabel");
-        _instructionsLabel = GetNode<Label>("VBoxContainer/InstructionsLabel");
-
-        // Set instructions text
-        _instructionsLabel.Text = "Click worker to select\n1=Lumberjack 2=Miner 3=Forager 4=Builder 0=Idle";
 
         // Subscribe to WorkerManager signals
         _workerManager.WorkerSelected += OnWorkerSelected;
