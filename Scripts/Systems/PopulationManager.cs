@@ -125,7 +125,15 @@ public partial class PopulationManager : Node
         // Start the growth check timer
         _growthCheckTimer.Start();
 
-        GD.Print($"[PopulationManager] Initialized - Population: {CurrentPopulation}, Housing: {TotalHousingCapacity}, Available: {AvailableHousing}");
+        GD.Print($"[PopulationManager] ========================================");
+        GD.Print($"[PopulationManager] INITIALIZED SUCCESSFULLY!");
+        GD.Print($"[PopulationManager] Population: {CurrentPopulation}");
+        GD.Print($"[PopulationManager] Housing Capacity: {TotalHousingCapacity}");
+        GD.Print($"[PopulationManager] Available Housing: {AvailableHousing}");
+        GD.Print($"[PopulationManager] Occupied Housing: {OccupiedHousing}");
+        GD.Print($"[PopulationManager] Timer interval: {GameConfig.GROWTH_CHECK_INTERVAL}s");
+        GD.Print($"[PopulationManager] Subscribed to BuildingManager.ConstructionCompleted");
+        GD.Print($"[PopulationManager] ========================================");
     }
 
     // === Growth System ===
@@ -136,8 +144,12 @@ public partial class PopulationManager : Node
     private void OnGrowthCheckTimerTimeout()
     {
         if (!_isInitialized)
+        {
+            GD.Print("[PopulationManager] Timer fired but not initialized yet");
             return;
+        }
 
+        GD.Print($"[PopulationManager] Growth check - Population: {CurrentPopulation}, Housing: {TotalHousingCapacity}, Available: {AvailableHousing}, Food at town hall: {_townHall?.GrowthFoodStorage ?? -1}");
         CheckGrowthConditions();
     }
 
@@ -146,21 +158,27 @@ public partial class PopulationManager : Node
     /// </summary>
     private void CheckGrowthConditions()
     {
+        GD.Print($"[PopulationManager] CheckGrowthConditions called");
+
         // Check if there's available housing
         if (AvailableHousing <= 0)
         {
-            LogManager.Log(LogManager.DEBUG_TASK_MANAGER, "[PopulationManager] No available housing for growth");
+            GD.Print($"[PopulationManager] No available housing for growth (Current: {CurrentPopulation}, Capacity: {TotalHousingCapacity})");
             return;
         }
+
+        GD.Print($"[PopulationManager] Available housing: {AvailableHousing} slots");
 
         // Check if town hall has enough food for growth
         if (_townHall.HasEnoughFoodForGrowth)
         {
+            GD.Print($"[PopulationManager] Town hall has enough food ({_townHall.GrowthFoodStorage}/{GameConfig.FOOD_PER_WORKER})");
             // Conditions met - spawn a new worker
             SpawnNewWorker();
         }
         else
         {
+            GD.Print($"[PopulationManager] Town hall needs more food ({_townHall.GrowthFoodStorage}/{GameConfig.FOOD_PER_WORKER})");
             // Need more food - ensure we have a growth food task
             EnsureGrowthFoodTask();
         }
@@ -285,10 +303,17 @@ public partial class PopulationManager : Node
     /// </summary>
     private void OnBuildingConstructionCompleted(Building building)
     {
+        GD.Print($"[PopulationManager] Building construction completed: {building.Data.Name} (Type: {building.GetType().Name})");
+
         // Check if it's a house
         if (building is House house)
         {
+            GD.Print($"[PopulationManager] Detected house completion!");
             RegisterHouse(house);
+        }
+        else
+        {
+            GD.Print($"[PopulationManager] Building is not a House, it's a {building.GetType().Name}");
         }
     }
 
