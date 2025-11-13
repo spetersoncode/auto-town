@@ -266,6 +266,10 @@ public partial class PopulationManager : Node
             return;
         }
 
+        // Set the stockpile reference so the worker can work
+        newWorker.SetStockpile(_stockpile);
+        GD.Print($"[PopulationManager] Set stockpile reference for new worker");
+
         // Assign worker to an available house
         AssignWorkerToHouse(newWorker);
 
