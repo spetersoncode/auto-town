@@ -27,45 +27,46 @@
 
 ---
 
-## Phase 1: Foundation & Project Structure
+## Phase 1: Foundation & Project Structure ✅ **COMPLETE**
 
 ### 1.1 Folder Structure
-- [ ] Create `Scripts/` directory for all C# scripts
-- [ ] Create `Scripts/Core/` for core game systems
-- [ ] Create `Scripts/Entities/` for game entities (Worker, Building, Resource)
-- [ ] Create `Scripts/Systems/` for manager classes
-- [ ] Create `Scripts/Data/` for data classes and enums
-- [ ] Create `Scripts/UI/` for UI components
-- [ ] Create `Scenes/` directory
-- [ ] Create `Scenes/Entities/` for entity scenes
-- [ ] Create `Scenes/UI/` for UI scenes
-- [ ] Create `Scenes/World/` for world/map scenes
-- [ ] Create `Assets/` directory for placeholders
-- [ ] Create `Resources/` directory for Godot resources
+- [x] Create `Scripts/` directory for all C# scripts
+- [x] Create `Scripts/Core/` for core game systems
+- [x] Create `Scripts/Entities/` for game entities (Worker, Building, Resource)
+- [x] Create `Scripts/Systems/` for manager classes
+- [x] Create `Scripts/Data/` for data classes and enums
+- [x] Create `Scripts/UI/` for UI components
+- [x] Create `Scenes/` directory
+- [x] Create `Scenes/Entities/` for entity scenes
+- [x] Create `Scenes/UI/` for UI scenes
+- [x] Create `Scenes/World/` for world/map scenes
+- [x] Create `Assets/` directory for placeholders
+- [x] Create `Resources/` directory for Godot resources
 
 ### 1.2 Core Data Models
-- [ ] Create `ResourceType.cs` enum (Wood, Stone, Food)
-- [ ] Create `JobType.cs` enum (None, Lumberjack, Miner, Forager, Farmer, Builder)
-- [ ] Create `TaskType.cs` enum (Gather, Build, Process, Haul)
-- [ ] Create `BuildingType.cs` enum (TownHall, Stockpile, House, Sawmill, Mine, Farm)
-- [ ] Create `ResourceData.cs` class for resource storage
-- [ ] Create `BuildingData.cs` class for building definitions
-- [ ] Create `WorkerData.cs` class for worker stats
+- [x] Create `ResourceType.cs` enum (Wood, Stone, Food)
+- [x] Create `JobType.cs` enum (None, Lumberjack, Miner, Forager, Farmer, Builder)
+- [x] Create `TaskType.cs` enum (Gather, Build, Process, Haul)
+- [x] Create `BuildingType.cs` enum (TownHall, Stockpile, House, Sawmill, Mine, Farm)
+- [x] Create `ResourceData.cs` class for resource storage
+- [x] Create `BuildingData.cs` class for building definitions
+- [x] Create `WorkerData.cs` class for worker stats
 
 ### 1.3 Base Scenes
-- [ ] Create `Main.tscn` - Root game scene
-- [ ] Create `World.tscn` - Map and entity container
-- [ ] Create `GameManager.cs` - Central game state manager
-- [ ] Create `UI.tscn` - Main UI overlay
-- [ ] Test basic scene loading and hierarchy
+- [x] Create `Main.tscn` - Root game scene
+- [x] Create `World.tscn` - Map and entity container
+- [x] Create `GameManager.cs` - Central game state manager
+- [x] Create `UI.tscn` - Main UI overlay
+- [x] Test basic scene loading and hierarchy
 
 ### 1.4 Placeholder Graphics System
-- [ ] Create `PlaceholderSprite.cs` - Generates colored shapes
-- [ ] Define color coding: Green=Wood, Gray=Stone, Yellow=Food, Blue=Worker, Red=Building
-- [ ] Create utility for spawning placeholder sprites
+- [x] Create `PlaceholderSprite.cs` - Generates colored shapes
+- [x] Define color coding: Green=Wood, Gray=Stone, Yellow=Food, Blue=Worker, Red=Building
+- [x] Create utility for spawning placeholder sprites
 
 **Dependencies:** None
-**Estimated Completion:** Phase 1 complete when folder structure exists and Main scene runs
+**Completed:** Early development phase (2024-2025)
+**Note:** Phase 1 established the foundation that all subsequent systems were built upon
 
 ---
 
@@ -442,18 +443,46 @@ Key signals to implement for decoupled systems:
 
 ---
 
+## Phase 11: Architecture Refactoring ✅ **IN PROGRESS**
+
+### 11.1 Configuration System Modernization
+- [x] Migrate building data to `BuildingResource` (Godot Resource pattern)
+- [x] Migrate harvestable resource data to `HarvestableResourceConfig`
+- [x] Create `MapGenerationConfig` Resource (17 inspector-tweakable parameters)
+- [x] Integrate MapGenerationConfig with WorldGenerator (dependency injection)
+- [x] Remove redundant camera constants (use CameraController exports)
+- [x] Reduce GameConfig.cs from 462 lines → 178 lines (61% reduction)
+- [x] Create `WorkerConfig` Resource (9 properties - prepared for integration)
+- [x] Create `GameBalanceConfig` Resource (5 properties - prepared for integration)
+- [ ] Integrate WorkerConfig into Worker.cs and WorkerManager.cs
+- [ ] Integrate GameBalanceConfig into ResourceManager.cs
+- [ ] Consider TaskSystemConfig for performance tuning parameters
+
+**Benefits Achieved:**
+- Map generation now fully inspector-tweakable (map size, terrain, resource spawning)
+- Building costs/times configurable via .tres files
+- 125 fewer lines of constants in GameConfig.cs
+- Follows idiomatic Godot Resource patterns
+- Enables rapid game design iteration without code recompilation
+
+**Dependencies:** Phases 1-6
+**Status:** Core refactoring complete, worker/balance configs prepared for future integration
+
+---
+
 ## Current Status
 - [x] Phase 0: Project initialized
-- [x] Phase 1: Foundation & Project Structure
+- [x] Phase 1: Foundation & Project Structure *(Completed early 2024-2025)*
 - [x] Phase 2: World & Map Generation
 - [x] Phase 3: Resource System
 - [x] Phase 4: Worker System (includes Phase 5 GatherTask integration)
 - [x] Phase 5: Task & Job Management (merged into Phase 4)
-- [x] Phase 6: Building System
-- [ ] Phase 7: Population Growth
+- [x] Phase 6: Building System *(Completed 2025-01-12)*
+- [ ] Phase 7: Population Growth - **NEXT PRIORITY**
 - [~] Phase 8: UI & Game Loop (partial - resource display complete)
 - [ ] Phase 9: Integration & Testing
 - [ ] Phase 10: Optional Enhancements
+- [~] Phase 11: Architecture Refactoring (config system complete, worker/balance integration pending)
 
 ---
 
@@ -503,5 +532,47 @@ The following items were intentionally simplified or deferred to maintain a work
 
 ---
 
-**Last Updated:** 2025-01-12
-**Version:** 1.4 - Phase 6 Complete (Building System with construction workflow)
+## Future Work & Priorities
+
+### Short-Term (Next Sprint)
+1. **Phase 7: Population Growth**
+   - Implement housing capacity tracking
+   - Create PopulationManager for growth logic
+   - Worker spawning based on housing + resources
+   - Essential for making game loop self-sustaining
+
+2. **Complete Configuration Integration**
+   - Integrate WorkerConfig into Worker.cs (movement, navigation)
+   - Integrate GameBalanceConfig into ResourceManager.cs (starting resources)
+   - Consider TaskSystemConfig for performance tuning
+
+### Medium-Term
+3. **Phase 8 Completion: UI & Game Loop**
+   - Game speed controls (pause, 1x, 2x, 3x)
+   - Win condition system (reach N population)
+   - Simple menu (New Game, Quit)
+   - Game initialization and restart
+
+4. **Phase 9: Integration & Testing**
+   - End-to-end gameplay testing
+   - Balance tuning (resource costs, generation rates)
+   - Bug fixes and edge case handling
+   - Performance profiling
+
+### Long-Term
+5. **Phase 10: Visual & Gameplay Enhancements**
+   - Replace placeholder sprites with art
+   - Add animations and particle effects
+   - Expand building variety
+   - Advanced AI features
+
+### Technical Debt
+- **Navigation Obstacles:** Re-enable building collision avoidance with robust pathfinding
+- **Worker UI Details:** Add comprehensive worker management panel (counts by job, idle workers)
+- **Visual Feedback:** Worker carry indicators when proper sprites are added
+- **Path Optimization:** Add path smoothing and visualization for debugging
+
+---
+
+**Last Updated:** 2025-01-13
+**Version:** 1.5 - Phase 11 Config Refactoring In Progress
