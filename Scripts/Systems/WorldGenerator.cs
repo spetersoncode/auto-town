@@ -311,8 +311,8 @@ public class WorldGenerator
         container.AddChild(townHall);
         worldData.AddBuildingPosition(centerPos);
 
-        // Activate the town hall immediately since it's a starter building
-        townHall.Activate();
+        // Note: TownHall will be registered by WorldController after generation
+        // Don't activate it here - let WorldController handle registration and activation
 
         GD.Print($"WorldGenerator: TownHall spawned at {centerPos} (no collision)");
     }

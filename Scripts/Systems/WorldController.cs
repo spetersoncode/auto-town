@@ -117,6 +117,14 @@ public partial class WorldController : Node2D
         FindStockpile();
         FindTownHall();
 
+        // Register and activate the starter town hall
+        if (_townHall != null)
+        {
+            _buildingManager.RegisterBuilding(_townHall);
+            _townHall.Activate();
+            GD.Print("WorldController: Starter TownHall registered and activated");
+        }
+
         // Initialize BuildingManager with stockpile reference
         if (_stockpile != null)
         {
