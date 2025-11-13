@@ -778,8 +778,8 @@ public partial class Worker : CharacterBody2D
             JobType.Lumberjack => new Color(0.13f, 0.55f, 0.13f), // Green (wood)
             JobType.Miner => new Color(0.5f, 0.5f, 0.5f), // Gray (stone)
             JobType.Forager => new Color(1.0f, 0.84f, 0.0f), // Yellow (food)
-            JobType.Builder => new Color(0.8f, 0.2f, 0.2f), // Red (building)
-            _ => new Color(0.3f, 0.6f, 1.0f) // Blue (default)
+            JobType.Builder => new Color(1.0f, 0.5f, 0.0f), // Orange (distinct from red buildings)
+            _ => new Color(0.3f, 0.6f, 1.0f) // Blue (default/idle)
         };
     }
 
