@@ -1,6 +1,8 @@
-[gd_scene load_steps=2 format=3 uid="uid://bos6dnp8ft4bi"]
+[gd_scene load_steps=4 format=3 uid="uid://bos6dnp8ft4bi"]
 
 [ext_resource type="Script" path="res://Scripts/UI/GameUI.cs" id="1_ui"]
+[ext_resource type="Script" path="res://Scripts/UI/WorkerSelectionUI.cs" id="2_worker_ui"]
+[ext_resource type="Script" path="res://Scripts/UI/ResourceDisplayUI.cs" id="3_resource_ui"]
 
 [node name="UI" type="CanvasLayer"]
 script = ExtResource("1_ui")
@@ -21,7 +23,7 @@ layout_mode = 2
 
 [node name="TitleLabel" type="Label" parent="MarginContainer/VBoxContainer/TopBar"]
 layout_mode = 2
-text = "Auto-Town - Phase 2"
+text = "Auto-Town - Phase 4"
 
 [node name="Spacer" type="Control" parent="MarginContainer/VBoxContainer/TopBar"]
 layout_mode = 2
@@ -95,3 +97,102 @@ color = Color(0.8, 0.2, 0.2, 1)
 [node name="BuildingLabel" type="Label" parent="LegendPanel/VBoxContainer/BuildingRow"]
 layout_mode = 2
 text = "  TownHall"
+
+[node name="WorkerRow" type="HBoxContainer" parent="LegendPanel/VBoxContainer"]
+layout_mode = 2
+
+[node name="WorkerColor" type="ColorRect" parent="LegendPanel/VBoxContainer/WorkerRow"]
+custom_minimum_size = Vector2(16, 16)
+layout_mode = 2
+color = Color(0.3, 0.6, 1, 1)
+
+[node name="WorkerLabel" type="Label" parent="LegendPanel/VBoxContainer/WorkerRow"]
+layout_mode = 2
+text = "  Workers (●)"
+
+[node name="ResourceDisplayPanel" type="PanelContainer" parent="."]
+offset_left = 10.0
+offset_top = 50.0
+offset_right = 210.0
+offset_bottom = 150.0
+script = ExtResource("3_resource_ui")
+
+[node name="VBoxContainer" type="VBoxContainer" parent="ResourceDisplayPanel"]
+layout_mode = 2
+
+[node name="TitleLabel" type="Label" parent="ResourceDisplayPanel/VBoxContainer"]
+layout_mode = 2
+text = "Resources"
+horizontal_alignment = 1
+
+[node name="HSeparator" type="HSeparator" parent="ResourceDisplayPanel/VBoxContainer"]
+layout_mode = 2
+
+[node name="WoodRow" type="HBoxContainer" parent="ResourceDisplayPanel/VBoxContainer"]
+layout_mode = 2
+
+[node name="WoodColor" type="ColorRect" parent="ResourceDisplayPanel/VBoxContainer/WoodRow"]
+custom_minimum_size = Vector2(16, 16)
+layout_mode = 2
+color = Color(0.13, 0.55, 0.13, 1)
+
+[node name="WoodText" type="Label" parent="ResourceDisplayPanel/VBoxContainer/WoodRow"]
+layout_mode = 2
+text = "  Wood: "
+
+[node name="WoodLabel" type="Label" parent="ResourceDisplayPanel/VBoxContainer/WoodRow"]
+layout_mode = 2
+text = "0"
+
+[node name="StoneRow" type="HBoxContainer" parent="ResourceDisplayPanel/VBoxContainer"]
+layout_mode = 2
+
+[node name="StoneColor" type="ColorRect" parent="ResourceDisplayPanel/VBoxContainer/StoneRow"]
+custom_minimum_size = Vector2(16, 16)
+layout_mode = 2
+color = Color(0.5, 0.5, 0.5, 1)
+
+[node name="StoneText" type="Label" parent="ResourceDisplayPanel/VBoxContainer/StoneRow"]
+layout_mode = 2
+text = "  Stone: "
+
+[node name="StoneLabel" type="Label" parent="ResourceDisplayPanel/VBoxContainer/StoneRow"]
+layout_mode = 2
+text = "0"
+
+[node name="FoodRow" type="HBoxContainer" parent="ResourceDisplayPanel/VBoxContainer"]
+layout_mode = 2
+
+[node name="FoodColor" type="ColorRect" parent="ResourceDisplayPanel/VBoxContainer/FoodRow"]
+custom_minimum_size = Vector2(16, 16)
+layout_mode = 2
+color = Color(1, 0.84, 0, 1)
+
+[node name="FoodText" type="Label" parent="ResourceDisplayPanel/VBoxContainer/FoodRow"]
+layout_mode = 2
+text = "  Food: "
+
+[node name="FoodLabel" type="Label" parent="ResourceDisplayPanel/VBoxContainer/FoodRow"]
+layout_mode = 2
+text = "0"
+
+[node name="WorkerSelectionPanel" type="PanelContainer" parent="."]
+offset_left = 942.0
+offset_top = 460.0
+offset_right = 1142.0
+offset_bottom = 638.0
+script = ExtResource("2_worker_ui")
+
+[node name="VBoxContainer" type="VBoxContainer" parent="WorkerSelectionPanel"]
+layout_mode = 2
+
+[node name="WorkerInfoLabel" type="Label" parent="WorkerSelectionPanel/VBoxContainer"]
+layout_mode = 2
+text = "No worker selected"
+
+[node name="HSeparator" type="HSeparator" parent="WorkerSelectionPanel/VBoxContainer"]
+layout_mode = 2
+
+[node name="InstructionsLabel" type="Label" parent="WorkerSelectionPanel/VBoxContainer"]
+layout_mode = 2
+text = "Instructions"

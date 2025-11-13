@@ -163,9 +163,10 @@ public class WorldGenerator
             "res://Scenes/Entities/ForageNode.tscn"
         );
 
-        GD.Print($"WorldGenerator: Resource nodes spawned - Trees: {worldData.GetResourceNodeCount(ResourceType.Wood)}, " +
-                 $"Stone: {worldData.GetResourceNodeCount(ResourceType.Stone)}, " +
-                 $"Forage: {worldData.GetResourceNodeCount(ResourceType.Food)}");
+        int treeCount = worldData.GetResourceNodeCount(ResourceType.Wood);
+        int stoneCount = worldData.GetResourceNodeCount(ResourceType.Stone);
+        int forageCount = worldData.GetResourceNodeCount(ResourceType.Food);
+        GD.Print($"WorldGenerator: Resource nodes spawned - Trees: {treeCount}, Stone: {stoneCount}, Forage: {forageCount} (Total: {treeCount + stoneCount + forageCount})");
     }
 
     /// <summary>
@@ -300,10 +301,12 @@ public class WorldGenerator
         );
         townHall.AddChild(visual);
 
+        // No collision for now - just visual
+
         container.AddChild(townHall);
         worldData.AddBuildingPosition(centerPos);
 
-        GD.Print($"WorldGenerator: TownHall spawned at {centerPos}");
+        GD.Print($"WorldGenerator: TownHall spawned at {centerPos} (no collision)");
     }
 
     /// <summary>

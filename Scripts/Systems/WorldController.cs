@@ -1,5 +1,8 @@
 using Godot;
+using System.Linq;
 using autotown.Core;
+using autotown.Data;
+using autotown.Entities;
 
 namespace autotown.Systems;
 
@@ -25,6 +28,26 @@ public partial class WorldController : Node2D
     private CameraController _camera;
 
     /// <summary>
+    /// Reference to the navigation region.
+    /// </summary>
+    private NavigationRegion2D _navigationRegion;
+
+    /// <summary>
+    /// Reference to the stockpile building.
+    /// </summary>
+    private Stockpile _stockpile;
+
+    /// <summary>
+    /// Cached reference to TaskManager.
+    /// </summary>
+    private TaskManager _taskManager;
+
+    /// <summary>
+    /// Cached reference to WorkerManager.
+    /// </summary>
+    private WorkerManager _workerManager;
+
+    /// <summary>
     /// Random seed for world generation. If 0, uses random seed.
     /// </summary>
     [Export]
@@ -33,6 +56,10 @@ public partial class WorldController : Node2D
     public override void _Ready()
     {
         GD.Print("WorldController: Initializing world...");
+
+        // Cache autoload references
+        _taskManager = GetNode<TaskManager>("/root/TaskManager");
+        _workerManager = GetNode<WorkerManager>("/root/WorkerManager");
 
         // Get references to child nodes
         TileMapLayer tileMap = GetNode<TileMapLayer>("Terrain/TileMapLayer");
@@ -48,9 +75,21 @@ public partial class WorldController : Node2D
         // Generate world
         WorldData = _worldGenerator.Generate(tileMap, this);
 
+        // Setup navigation mesh (must be after world generation)
+        SetupNavigationMesh();
+
         // Configure camera
         _camera.SetBounds(WorldData.Width, WorldData.Height);
         _camera.CenterOn(WorldData.GetMapCenter());
+
+        // Find the stockpile (spawned during world generation)
+        FindStockpile();
+
+        // Generate gather tasks for all resource nodes
+        GenerateGatherTasks();
+
+        // Spawn starter workers
+        SpawnStarterWorkers();
 
         GD.Print("WorldController: World initialization complete!");
     }
@@ -115,5 +154,132 @@ public partial class WorldController : Node2D
     public Vector2 GetMapCenter()
     {
         return WorldData?.GetMapCenter() ?? Vector2.Zero;
+    }
+
+    /// <summary>
+    /// Sets up a simple navigation mesh for worker pathfinding.
+    /// Just a flat mesh covering the entire map - physics handles obstacle avoidance.
+    /// </summary>
+    private void SetupNavigationMesh()
+    {
+        GD.Print("WorldController: Setting up navigation mesh...");
+
+        // Create navigation region
+        _navigationRegion = new NavigationRegion2D();
+        _navigationRegion.Name = "NavigationRegion";
+        AddChild(_navigationRegion);
+
+        // Create simple navigation polygon covering entire map
+        var navPoly = new NavigationPolygon();
+
+        // Use larger cell size for simpler pathfinding
+        navPoly.CellSize = 8.0f;
+
+        // Create walkable area covering the entire map
+        float mapWidthPixels = WorldData.Width * GameConfig.TILE_SIZE;
+        float mapHeightPixels = WorldData.Height * GameConfig.TILE_SIZE;
+
+        // Simple rectangular outline
+        var walkableOutline = new Vector2[]
+        {
+            new Vector2(0, 0),
+            new Vector2(mapWidthPixels, 0),
+            new Vector2(mapWidthPixels, mapHeightPixels),
+            new Vector2(0, mapHeightPixels)
+        };
+        navPoly.AddOutline(walkableOutline);
+
+        // Bake the navigation mesh
+        #pragma warning disable CS0618
+        navPoly.MakePolygonsFromOutlines();
+        #pragma warning restore CS0618
+
+        _navigationRegion.NavigationPolygon = navPoly;
+        _navigationRegion.Enabled = true;
+
+        GD.Print($"WorldController: Simple navigation mesh created (flat, no obstacles)");
+    }
+
+    /// <summary>
+    /// Finds the stockpile building in the Buildings container.
+    /// </summary>
+    private void FindStockpile()
+    {
+        var buildingsContainer = GetNode<Node2D>("Buildings");
+        foreach (var child in buildingsContainer.GetChildren())
+        {
+            if (child is Stockpile stockpile)
+            {
+                _stockpile = stockpile;
+                GD.Print($"WorldController: Found stockpile at {_stockpile.GlobalPosition}");
+                return;
+            }
+        }
+
+        GD.PrintErr("WorldController: Stockpile not found!");
+    }
+
+    /// <summary>
+    /// Generates gather tasks for all resource nodes on the map.
+    /// Note: We DON'T pre-generate all tasks anymore. Workers will find resources dynamically.
+    /// This just sets up resource depletion monitoring.
+    /// </summary>
+    private void GenerateGatherTasks()
+    {
+        if (_stockpile == null)
+        {
+            GD.PrintErr("WorldController: Cannot generate tasks - stockpile not found");
+            return;
+        }
+
+        var resourceNodesContainer = GetNode<Node2D>("ResourceNodes");
+        int resourceCount = 0;
+
+        foreach (var child in resourceNodesContainer.GetChildren())
+        {
+            if (child is HarvestableResource resource)
+            {
+                // Subscribe to resource depletion to cancel related tasks
+                resource.ResourceDepleted += (res) => OnResourceDepleted(res);
+                resourceCount++;
+            }
+        }
+
+        GD.Print($"WorldController: Monitoring {resourceCount} resource nodes (tasks created on-demand)");
+    }
+
+    /// <summary>
+    /// Spawns starter workers at the town hall position.
+    /// </summary>
+    private void SpawnStarterWorkers()
+    {
+        // Find town hall position (center of map)
+        var townHallPos = WorldData.GetMapCenter();
+
+        var workersContainer = GetNode<Node2D>("Workers");
+
+        // Spawn 5 workers with different jobs
+        _workerManager.SpawnWorker(townHallPos + new Vector2(-32, -32), JobType.Lumberjack, workersContainer);
+        _workerManager.SpawnWorker(townHallPos + new Vector2(32, -32), JobType.Miner, workersContainer);
+        _workerManager.SpawnWorker(townHallPos + new Vector2(-32, 32), JobType.Forager, workersContainer);
+        _workerManager.SpawnWorker(townHallPos + new Vector2(32, 32), JobType.Builder, workersContainer);
+        _workerManager.SpawnWorker(townHallPos, JobType.Builder, workersContainer);
+
+        // Set stockpile reference for all workers
+        foreach (var worker in _workerManager.GetAllWorkers())
+        {
+            worker.SetStockpile(_stockpile);
+        }
+
+        GD.Print($"WorldController: Spawned {_workerManager.WorkerCount} starter workers");
+    }
+
+    /// <summary>
+    /// Called when a resource is depleted. Cancels all tasks for that resource.
+    /// </summary>
+    private void OnResourceDepleted(HarvestableResource resource)
+    {
+        _taskManager.CancelTasksForResource(resource);
+        GD.Print($"WorldController: Resource depleted, cancelled related tasks");
     }
 }

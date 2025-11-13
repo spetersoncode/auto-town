@@ -131,8 +131,9 @@ public partial class HarvestableResource : Node2D
         // Get the visual node (currently not used, but available for future features)
         _visual = GetNodeOrNull<ColorRect>("Visual");
 
-        GD.Print($"[HarvestableResource] {ResourceType} node initialized at {GlobalPosition}. " +
-                 $"Max Harvests: {MaxHarvests}, Yield: {YieldPerHarvest}");
+        // Reduced logging - only log once per game instead of per node
+        // GD.Print($"[HarvestableResource] {ResourceType} node initialized at {GlobalPosition}. " +
+        //          $"Max Harvests: {MaxHarvests}, Yield: {YieldPerHarvest}");
     }
 
     public override void _Process(double delta)
@@ -140,7 +141,16 @@ public partial class HarvestableResource : Node2D
         // Update harvest progress if being harvested
         if (_state == HarvestState.BeingHarvested && HarvestDuration > 0)
         {
+            float oldProgress = _harvestProgress;
             _harvestProgress += (float)delta / HarvestDuration;
+
+            // Only log at 25% intervals to reduce spam
+            int oldQuarter = (int)(oldProgress * 4);
+            int newQuarter = (int)(_harvestProgress * 4);
+            if (newQuarter > oldQuarter && newQuarter <= 4)
+            {
+                GD.Print($"[HarvestableResource] {ResourceType} harvesting... progress: {_harvestProgress * 100:F0}%");
+            }
 
             if (_harvestProgress >= 1.0f)
             {
@@ -212,7 +222,7 @@ public partial class HarvestableResource : Node2D
         _state = HarvestState.BeingHarvested;
         _harvestProgress = 0.0f;
 
-        GD.Print($"[HarvestableResource] Harvest started on {ResourceType} at {GlobalPosition}");
+        GD.Print($"[HarvestableResource] Harvest started on {ResourceType} at {GlobalPosition}. Duration: {HarvestDuration}s, IsProcessing: {IsProcessing()}");
         EmitSignal(SignalName.HarvestStarted, this);
 
         return true;

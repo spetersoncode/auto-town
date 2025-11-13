@@ -18,6 +18,61 @@ public static class GameConfig
     /// </summary>
     public const float DEFAULT_WORKER_EFFICIENCY = 1.0f;
 
+    /// <summary>
+    /// Range in pixels within which a worker can interact with resources/buildings.
+    /// </summary>
+    public const float WORKER_INTERACTION_RANGE = 24.0f;
+
+    // === Navigation Configuration ===
+
+    /// <summary>
+    /// Maximum speed for NavigationAgent2D in pixels per second.
+    /// </summary>
+    public const float NAV_AGENT_MAX_SPEED = 100.0f;
+
+    /// <summary>
+    /// Path desired distance - how close the agent gets to target before considering it reached.
+    /// </summary>
+    public const float NAV_AGENT_PATH_DESIRED_DISTANCE = 8.0f;
+
+    /// <summary>
+    /// Target desired distance - how close to final target before stopping.
+    /// Must be smaller than WORKER_INTERACTION_RANGE so workers can actually interact.
+    /// </summary>
+    public const float NAV_AGENT_TARGET_DESIRED_DISTANCE = 10.0f;
+
+    /// <summary>
+    /// Radius of the navigation agent for collision avoidance.
+    /// </summary>
+    public const float NAV_AGENT_RADIUS = 8.0f;
+
+    /// <summary>
+    /// Navigation mesh cell size in pixels (affects pathfinding precision).
+    /// </summary>
+    public const float NAV_MESH_CELL_SIZE = 8.0f;
+
+    /// <summary>
+    /// Border size around navigation mesh obstacles.
+    /// </summary>
+    public const float NAV_MESH_BORDER_SIZE = 4.0f;
+
+    // === Task System Configuration ===
+
+    /// <summary>
+    /// How often workers scan for new tasks in seconds (avoids checking every frame).
+    /// </summary>
+    public const float TASK_SCAN_INTERVAL = 0.5f;
+
+    /// <summary>
+    /// Maximum distance a worker will consider for tasks in pixels (0 = unlimited).
+    /// </summary>
+    public const float MAX_TASK_DISTANCE = 800.0f;
+
+    /// <summary>
+    /// Maximum number of pending tasks in the queue (prevents unbounded growth).
+    /// </summary>
+    public const int MAX_TASK_QUEUE_SIZE = 200;
+
     // === Building Configuration ===
 
     /// <summary>

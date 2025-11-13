@@ -54,13 +54,37 @@ public static class PlaceholderSprite
     }
 
     /// <summary>
-    /// Creates a placeholder sprite for a worker.
+    /// Creates a placeholder sprite for a worker (circular shape).
     /// </summary>
-    /// <param name="size">Size of the sprite (default: 16x16)</param>
-    /// <returns>ColorRect representing the worker</returns>
-    public static ColorRect CreateWorkerSprite(float size = GameConfig.WORKER_SPRITE_SIZE)
+    /// <param name="size">Diameter of the circle (default: 16)</param>
+    /// <returns>Polygon2D representing the worker as a circle</returns>
+    public static Polygon2D CreateWorkerSprite(float size = GameConfig.WORKER_SPRITE_SIZE)
     {
-        return CreateRect(new Vector2(size, size), WorkerColor);
+        return CreateCircle(size / 2, WorkerColor);
+    }
+
+    /// <summary>
+    /// Creates a circular polygon.
+    /// </summary>
+    /// <param name="radius">Radius of the circle</param>
+    /// <param name="color">Color of the circle</param>
+    /// <param name="segments">Number of segments (more = smoother circle)</param>
+    /// <returns>Polygon2D shaped as a circle</returns>
+    public static Polygon2D CreateCircle(float radius, Color color, int segments = 32)
+    {
+        var polygon = new Polygon2D();
+        var points = new Vector2[segments];
+
+        for (int i = 0; i < segments; i++)
+        {
+            float angle = i * Mathf.Tau / segments;
+            points[i] = new Vector2(Mathf.Cos(angle), Mathf.Sin(angle)) * radius;
+        }
+
+        polygon.Polygon = points;
+        polygon.Color = color;
+
+        return polygon;
     }
 
     /// <summary>
