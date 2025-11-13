@@ -11,8 +11,13 @@ config_version=5
 [application]
 
 config/name="auto-town"
+run/main_scene="res://Scenes/Main.tscn"
 config/features=PackedStringArray("4.5", "GL Compatibility")
 config/icon="res://icon.svg"
+
+[autoload]
+
+GameManager="*res://Scripts/Core/GameManager.cs"
 
 [dotnet]
 
