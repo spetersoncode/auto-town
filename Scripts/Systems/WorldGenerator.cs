@@ -55,9 +55,10 @@ public class WorldGenerator
         Node2D resourceContainer = worldNode.GetNode<Node2D>("ResourceNodes");
         SpawnResourceNodes(resourceContainer, worldData);
 
-        // Spawn starter building (TownHall at center)
+        // Spawn starter buildings (TownHall and Stockpile at center)
         Node2D buildingContainer = worldNode.GetNode<Node2D>("Buildings");
         SpawnStarterTownHall(buildingContainer, worldData);
+        SpawnStarterStockpile(buildingContainer, worldData);
 
         GD.Print("WorldGenerator: World generation complete!");
         return worldData;
@@ -303,5 +304,36 @@ public class WorldGenerator
         worldData.AddBuildingPosition(centerPos);
 
         GD.Print($"WorldGenerator: TownHall spawned at {centerPos}");
+    }
+
+    /// <summary>
+    /// Spawns a starter Stockpile building near the TownHall.
+    /// </summary>
+    private void SpawnStarterStockpile(Node2D container, WorldData worldData)
+    {
+        GD.Print("WorldGenerator: Spawning starter Stockpile...");
+
+        Vector2 centerPos = worldData.GetMapCenter();
+
+        // Offset from TownHall (3 tiles to the right)
+        Vector2 stockpilePos = centerPos + new Vector2(GameConfig.TILE_SIZE * 3, 0);
+
+        // Load stockpile scene
+        PackedScene stockpileScene = GD.Load<PackedScene>("res://Scenes/Entities/Stockpile.tscn");
+        if (stockpileScene == null)
+        {
+            GD.PrintErr("WorldGenerator: Failed to load Stockpile.tscn");
+            return;
+        }
+
+        // Instantiate and position
+        Node2D stockpile = stockpileScene.Instantiate<Node2D>();
+        stockpile.Name = "StarterStockpile";
+        stockpile.Position = stockpilePos;
+
+        container.AddChild(stockpile);
+        worldData.AddBuildingPosition(stockpilePos);
+
+        GD.Print($"WorldGenerator: Stockpile spawned at {stockpilePos}");
     }
 }

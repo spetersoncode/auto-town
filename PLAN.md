@@ -109,38 +109,38 @@
 ## Phase 3: Resource System
 
 ### 3.1 Resource Types & Data
-- [ ] Create `Resource.cs` - Base resource class
-- [ ] Implement resource storage (Dictionary<ResourceType, int>)
-- [ ] Add resource change events (signal: ResourceChanged)
-- [ ] Create `ResourceManager.cs` - Global resource tracking
+- [x] Create `Resource.cs` - Base resource class (reused existing ResourceData.cs)
+- [x] Implement resource storage (Dictionary<ResourceType, int>)
+- [x] Add resource change events (signal: ResourceChanged)
+- [x] Create `ResourceManager.cs` - Global resource tracking
 
 ### 3.2 Harvestable Resource Nodes
-- [ ] Create `HarvestableResource.cs` - Base class for map resources
-- [ ] Implement `TreeNode.cs` - Wood resource (extends HarvestableResource)
-- [ ] Implement `StoneNode.cs` - Stone resource
-- [ ] Implement `ForageNode.cs` - Food resource
-- [ ] Add harvest progress tracking
-- [ ] Add depletion logic (resource consumed after X harvests)
-- [ ] Emit signal when resource is depleted
-- [ ] Create scenes: `TreeNode.tscn`, `StoneNode.tscn`, `ForageNode.tscn`
+- [x] Create `HarvestableResource.cs` - Base class for map resources
+- [x] Implement `TreeNode.cs` - Wood resource (extends HarvestableResource)
+- [x] Implement `StoneNode.cs` - Stone resource
+- [x] Implement `ForageNode.cs` - Food resource
+- [x] Add harvest progress tracking
+- [x] Add depletion logic (resource consumed after X harvests)
+- [x] Emit signal when resource is depleted
+- [x] Create scenes: `TreeNode.tscn`, `StoneNode.tscn`, `ForageNode.tscn` (attached scripts)
 
 ### 3.3 Stockpile System
-- [ ] Create `Stockpile.cs` - Resource storage building
-- [ ] Implement resource deposit logic
-- [ ] Implement resource withdrawal logic
-- [ ] Add capacity limits (optional for tech demo)
-- [ ] Create `Stockpile.tscn` scene
-- [ ] Integrate with ResourceManager
+- [x] Create `Stockpile.cs` - Resource storage building
+- [x] Implement resource deposit logic
+- [x] Implement resource withdrawal logic
+- [x] Add capacity limits (optional for tech demo)
+- [x] Create `Stockpile.tscn` scene
+- [x] Integrate with ResourceManager
 
 ### 3.4 Resource Collection
-- [ ] Implement resource gathering mechanics
-- [ ] Workers collect resources from nodes
-- [ ] Workers carry resources to stockpile
-- [ ] Update ResourceManager when deposited
-- [ ] Add visual feedback (worker carrying resource indicator)
+- [x] Implement resource gathering mechanics (harvest system ready)
+- [ ] Workers collect resources from nodes (Phase 4 dependency)
+- [ ] Workers carry resources to stockpile (Phase 4 dependency)
+- [x] Update ResourceManager when deposited (integrated)
+- [ ] Add visual feedback (worker carrying resource indicator) (Phase 4 dependency)
 
 **Dependencies:** Phase 1, Phase 2
-**Estimated Completion:** Workers can gather resources and deposit in stockpile
+**Estimated Completion:** Workers can gather resources and deposit in stockpile ✅ **COMPLETE (Phase 3 systems ready, worker integration in Phase 4)**
 
 ---
 
@@ -428,7 +428,7 @@ Key signals to implement for decoupled systems:
 - [x] Phase 0: Project initialized
 - [x] Phase 1: Foundation & Project Structure
 - [x] Phase 2: World & Map Generation
-- [ ] Phase 3: Resource System
+- [x] Phase 3: Resource System
 - [ ] Phase 4: Worker System
 - [ ] Phase 5: Task & Job Management
 - [ ] Phase 6: Building System
@@ -450,4 +450,4 @@ Key signals to implement for decoupled systems:
 ---
 
 **Last Updated:** 2025-01-12
-**Version:** 1.1 - Phase 2 Complete
+**Version:** 1.2 - Phase 3 Complete

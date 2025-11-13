@@ -168,6 +168,75 @@ public static class GameConfig
     /// </summary>
     public const int RESOURCE_MIN_SPACING = 8;
 
+    // === Resource Harvesting Configuration ===
+
+    /// <summary>
+    /// Maximum number of times a tree can be harvested before depletion.
+    /// </summary>
+    public const int TREE_MAX_HARVESTS = 5;
+
+    /// <summary>
+    /// Amount of wood gathered per tree harvest.
+    /// </summary>
+    public const int TREE_YIELD_PER_HARVEST = 10;
+
+    /// <summary>
+    /// Time required to harvest a tree in seconds.
+    /// </summary>
+    public const float TREE_HARVEST_DURATION = 2.0f;
+
+    /// <summary>
+    /// Maximum number of times a stone deposit can be harvested before depletion.
+    /// </summary>
+    public const int STONE_MAX_HARVESTS = 3;
+
+    /// <summary>
+    /// Amount of stone gathered per stone harvest.
+    /// </summary>
+    public const int STONE_YIELD_PER_HARVEST = 15;
+
+    /// <summary>
+    /// Time required to harvest stone in seconds.
+    /// </summary>
+    public const float STONE_HARVEST_DURATION = 3.0f;
+
+    /// <summary>
+    /// Maximum number of times a forage area can be harvested before depletion.
+    /// </summary>
+    public const int FORAGE_MAX_HARVESTS = 4;
+
+    /// <summary>
+    /// Amount of food gathered per forage harvest.
+    /// </summary>
+    public const int FORAGE_YIELD_PER_HARVEST = 8;
+
+    /// <summary>
+    /// Time required to forage for food in seconds.
+    /// </summary>
+    public const float FORAGE_HARVEST_DURATION = 1.5f;
+
+    // === Starting Resources Configuration ===
+
+    /// <summary>
+    /// Starting wood when a new game begins.
+    /// </summary>
+    public const int STARTING_WOOD = 50;
+
+    /// <summary>
+    /// Starting stone when a new game begins.
+    /// </summary>
+    public const int STARTING_STONE = 30;
+
+    /// <summary>
+    /// Starting food when a new game begins.
+    /// </summary>
+    public const int STARTING_FOOD = 100;
+
+    /// <summary>
+    /// Maximum capacity per resource type in stockpile (0 = unlimited).
+    /// </summary>
+    public const int STOCKPILE_CAPACITY_PER_RESOURCE = 0; // Unlimited for tech demo
+
     // === Camera Configuration ===
 
     /// <summary>

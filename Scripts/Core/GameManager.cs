@@ -75,8 +75,9 @@ public partial class GameManager : Node
         _gameSpeed = GameConfig.GAME_SPEED_NORMAL;
         Engine.TimeScale = _gameSpeed;
 
-        // Future: Initialize other manager systems here
-        // - ResourceManager
+        // Manager systems (autoload singletons initialize themselves):
+        // - ResourceManager (✓ implemented)
+        // Future managers:
         // - WorkerManager
         // - TaskManager
         // - BuildingManager

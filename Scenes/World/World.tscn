@@ -1,7 +1,8 @@
-[gd_scene load_steps=3 format=3 uid="uid://bpq2mfyamjj4a"]
+[gd_scene load_steps=4 format=3 uid="uid://bpq2mfyamjj4a"]
 
 [ext_resource type="Script" path="res://Scripts/Systems/WorldController.cs" id="1_world"]
 [ext_resource type="Script" path="res://Scripts/Core/CameraController.cs" id="2_camera"]
+[ext_resource type="Script" path="res://Scripts/Core/ResourceHarvestTester.cs" id="3_tester"]
 
 [node name="World" type="Node2D"]
 script = ExtResource("1_world")
@@ -18,3 +19,6 @@ script = ExtResource("1_world")
 
 [node name="Camera" type="Camera2D" parent="."]
 script = ExtResource("2_camera")
+
+[node name="ResourceHarvestTester" type="Node2D" parent="."]
+script = ExtResource("3_tester")
