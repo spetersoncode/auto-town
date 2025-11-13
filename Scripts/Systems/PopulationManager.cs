@@ -275,12 +275,15 @@ public partial class PopulationManager : Node
             return;
         }
 
-        // Spawn the worker next to town hall (not inside it) with no job (JobType.None)
+        // Spawn the worker next to town hall (not inside it)
         // Offset by 48 pixels (3 tiles) to the left so workers appear adjacent
         Vector2 spawnOffset = new Vector2(-48, 0);
         Vector2 spawnPosition = _townHall.GlobalPosition + spawnOffset;
 
-        var newWorker = _workerManager.SpawnWorker(spawnPosition, JobType.None, _workersContainer);
+        // Auto-assign job based on which resource is most lacking
+        JobType assignedJob = DetermineJobForNewWorker();
+
+        var newWorker = _workerManager.SpawnWorker(spawnPosition, assignedJob, _workersContainer);
         if (newWorker == null)
         {
             GD.PrintErr("[PopulationManager] Failed to spawn new worker");
@@ -303,6 +306,42 @@ public partial class PopulationManager : Node
         EmitSignal(SignalName.HousingCapacityChanged, TotalHousingCapacity, OccupiedHousing, AvailableHousing);
 
         GD.Print($"[PopulationManager] New worker spawned! Population: {CurrentPopulation}/{TotalHousingCapacity}");
+    }
+
+    /// <summary>
+    /// Determines the appropriate job for a new worker based on which resource is most lacking.
+    /// Checks current stockpile amounts and assigns the job for the resource with the lowest quantity.
+    /// </summary>
+    /// <returns>The JobType for the resource with the lowest stockpile amount.</returns>
+    private JobType DetermineJobForNewWorker()
+    {
+        // Get current resource amounts from stockpile
+        int woodAmount = _resourceManager.GetResourceAmount(ResourceType.Wood);
+        int stoneAmount = _resourceManager.GetResourceAmount(ResourceType.Stone);
+        int foodAmount = _resourceManager.GetResourceAmount(ResourceType.Food);
+
+        GD.Print($"[PopulationManager] Resource amounts - Wood: {woodAmount}, Stone: {stoneAmount}, Food: {foodAmount}");
+
+        // Find which resource is most lacking (lowest amount)
+        int minAmount = Mathf.Min(Mathf.Min(woodAmount, stoneAmount), foodAmount);
+
+        // Return the corresponding job type for the lacking resource
+        JobType assignedJob;
+        if (minAmount == woodAmount)
+        {
+            assignedJob = JobType.Lumberjack;
+        }
+        else if (minAmount == stoneAmount)
+        {
+            assignedJob = JobType.Miner;
+        }
+        else
+        {
+            assignedJob = JobType.Forager;
+        }
+
+        GD.Print($"[PopulationManager] Auto-assigning new worker as {assignedJob}");
+        return assignedJob;
     }
 
     /// <summary>

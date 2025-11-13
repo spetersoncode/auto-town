@@ -238,6 +238,13 @@ public class WorldGenerator
 
             Vector2 worldPos = worldData.TileToWorld(tileX, tileY);
 
+            // Check if too close to spawn point (map center)
+            Vector2 spawnPoint = worldData.GetMapCenter();
+            const float SPAWN_EXCLUSION_RADIUS = 160f; // 10 tiles * 16 pixels per tile
+            float distanceFromSpawn = worldPos.DistanceTo(spawnPoint);
+            if (distanceFromSpawn < SPAWN_EXCLUSION_RADIUS)
+                continue;
+
             // Check spacing from other clusters
             bool tooClose = false;
             foreach (Vector2 existingCenter in existingCenters)

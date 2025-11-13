@@ -370,12 +370,11 @@ public partial class WorldController : Node2D
 
         var workersContainer = GetNode<Node2D>("Workers");
 
-        // Spawn 5 workers with different jobs
+        // Spawn 4 workers with different jobs (one for each job type)
         _workerManager.SpawnWorker(townHallPos + new Vector2(-32, -32), JobType.Lumberjack, workersContainer);
         _workerManager.SpawnWorker(townHallPos + new Vector2(32, -32), JobType.Miner, workersContainer);
         _workerManager.SpawnWorker(townHallPos + new Vector2(-32, 32), JobType.Forager, workersContainer);
         _workerManager.SpawnWorker(townHallPos + new Vector2(32, 32), JobType.Builder, workersContainer);
-        _workerManager.SpawnWorker(townHallPos, JobType.Builder, workersContainer);
 
         // Set stockpile reference for all workers
         foreach (var worker in _workerManager.GetAllWorkers())
