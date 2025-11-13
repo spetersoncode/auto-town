@@ -1,0 +1,23 @@
+[gd_resource type="Resource" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://Scripts/Data/MapGenerationConfig.cs" id="1"]
+
+[resource]
+script = ExtResource("1")
+MapWidth = 100
+MapHeight = 100
+TileSize = 16
+NoiseFrequency = 0.05
+NoiseOctaves = 3
+WaterThreshold = -0.3
+MountainThreshold = 0.5
+TreeClusterCount = 15
+TreesPerCluster = 8
+TreeClusterRadius = 4
+StoneClusterCount = 10
+StonesPerCluster = 5
+StoneClusterRadius = 3
+ForageAreaCount = 12
+ForagesPerArea = 6
+ForageAreaRadius = 3
+ResourceMinSpacing = 8

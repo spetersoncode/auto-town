@@ -1,0 +1,11 @@
+[gd_resource type="Resource" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://Scripts/Data/GameBalanceConfig.cs" id="1"]
+
+[resource]
+script = ExtResource("1")
+StartingWood = 50
+StartingStone = 30
+StartingFood = 100
+StockpileCapacity = 0
+ConstructionHaulAmount = 20

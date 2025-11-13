@@ -14,13 +14,17 @@ public class WorldGenerator
 {
     private Random _random;
     private FastNoiseLite _noise;
+    private MapGenerationConfig _config;
 
     /// <summary>
-    /// Initializes the world generator with an optional seed.
+    /// Initializes the world generator with configuration and optional seed.
     /// </summary>
+    /// <param name="config">Map generation configuration</param>
     /// <param name="seed">Random seed for generation. If null, uses random seed.</param>
-    public WorldGenerator(int? seed = null)
+    public WorldGenerator(MapGenerationConfig config, int? seed = null)
     {
+        _config = config ?? throw new ArgumentNullException(nameof(config));
+
         int actualSeed = seed ?? new Random().Next();
         _random = new Random(actualSeed);
 
@@ -28,8 +32,8 @@ public class WorldGenerator
         _noise = new FastNoiseLite();
         _noise.Seed = actualSeed;
         _noise.NoiseType = FastNoiseLite.NoiseTypeEnum.Perlin;
-        _noise.Frequency = GameConfig.NOISE_FREQUENCY;
-        _noise.FractalOctaves = GameConfig.NOISE_OCTAVES;
+        _noise.Frequency = _config.NoiseFrequency;
+        _noise.FractalOctaves = _config.NoiseOctaves;
         _noise.FractalType = FastNoiseLite.FractalTypeEnum.Fbm;
 
         GD.Print($"WorldGenerator: Initialized with seed {actualSeed}");
@@ -46,7 +50,7 @@ public class WorldGenerator
         GD.Print("WorldGenerator: Starting world generation...");
 
         // Create world data
-        WorldData worldData = new WorldData(GameConfig.MAP_WIDTH, GameConfig.MAP_HEIGHT);
+        WorldData worldData = new WorldData(_config.MapWidth, _config.MapHeight);
 
         // Generate terrain
         GenerateTerrain(tileMap, worldData);
@@ -76,21 +80,21 @@ public class WorldGenerator
         int grassTiles = 0;
         int dirtTiles = 0;
 
-        for (int x = 0; x < GameConfig.MAP_WIDTH; x++)
+        for (int x = 0; x < _config.MapWidth; x++)
         {
-            for (int y = 0; y < GameConfig.MAP_HEIGHT; y++)
+            for (int y = 0; y < _config.MapHeight; y++)
             {
                 // Get noise value (-1 to 1)
                 float noiseValue = _noise.GetNoise2D(x, y);
 
                 // Determine tile type based on noise thresholds
                 TileType tileType;
-                if (noiseValue < GameConfig.WATER_THRESHOLD)
+                if (noiseValue < _config.WaterThreshold)
                 {
                     tileType = TileType.Water;
                     waterTiles++;
                 }
-                else if (noiseValue > GameConfig.MOUNTAIN_THRESHOLD)
+                else if (noiseValue > _config.MountainThreshold)
                 {
                     tileType = TileType.Mountain;
                     mountainTiles++;
@@ -135,9 +139,9 @@ public class WorldGenerator
             container,
             worldData,
             ResourceType.Wood,
-            GameConfig.TREE_CLUSTER_COUNT,
-            GameConfig.TREES_PER_CLUSTER,
-            GameConfig.TREE_CLUSTER_RADIUS,
+            _config.TreeClusterCount,
+            _config.TreesPerCluster,
+            _config.TreeClusterRadius,
             "res://Scenes/Entities/TreeNode.tscn"
         );
 
@@ -146,9 +150,9 @@ public class WorldGenerator
             container,
             worldData,
             ResourceType.Stone,
-            GameConfig.STONE_CLUSTER_COUNT,
-            GameConfig.STONES_PER_CLUSTER,
-            GameConfig.STONE_CLUSTER_RADIUS,
+            _config.StoneClusterCount,
+            _config.StonesPerCluster,
+            _config.StoneClusterRadius,
             "res://Scenes/Entities/StoneNode.tscn"
         );
 
@@ -157,9 +161,9 @@ public class WorldGenerator
             container,
             worldData,
             ResourceType.Food,
-            GameConfig.FORAGE_AREA_COUNT,
-            GameConfig.FORAGES_PER_AREA,
-            GameConfig.FORAGE_AREA_RADIUS,
+            _config.ForageAreaCount,
+            _config.ForagesPerArea,
+            _config.ForageAreaRadius,
             "res://Scenes/Entities/ForageNode.tscn"
         );
 
@@ -237,7 +241,7 @@ public class WorldGenerator
             foreach (Vector2 existingCenter in existingCenters)
             {
                 float distance = worldPos.DistanceTo(existingCenter);
-                if (distance < GameConfig.RESOURCE_MIN_SPACING * GameConfig.TILE_SIZE)
+                if (distance < _config.ResourceMinSpacing * _config.TileSize)
                 {
                     tooClose = true;
                     break;
@@ -262,7 +266,7 @@ public class WorldGenerator
         {
             // Random offset within cluster radius
             float angle = (float)(_random.NextDouble() * Math.PI * 2);
-            float distance = (float)(_random.NextDouble() * radius * GameConfig.TILE_SIZE);
+            float distance = (float)(_random.NextDouble() * radius * _config.TileSize);
 
             Vector2 offset = new Vector2(
                 Mathf.Cos(angle) * distance,
@@ -319,7 +323,7 @@ public class WorldGenerator
         Vector2 centerPos = worldData.GetMapCenter();
 
         // Offset from TownHall (3 tiles to the right)
-        Vector2 stockpilePos = centerPos + new Vector2(GameConfig.TILE_SIZE * 3, 0);
+        Vector2 stockpilePos = centerPos + new Vector2(_config.TileSize * 3, 0);
 
         // Load stockpile scene
         PackedScene stockpileScene = GD.Load<PackedScene>("res://Scenes/Entities/Stockpile.tscn");

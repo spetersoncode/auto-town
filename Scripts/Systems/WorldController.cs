@@ -24,6 +24,11 @@ public partial class WorldController : Node2D
     private WorldGenerator _worldGenerator;
 
     /// <summary>
+    /// Map generation configuration.
+    /// </summary>
+    private MapGenerationConfig _mapConfig;
+
+    /// <summary>
     /// Reference to the camera controller.
     /// </summary>
     private CameraController _camera;
@@ -72,12 +77,20 @@ public partial class WorldController : Node2D
         TileMapLayer tileMap = GetNode<TileMapLayer>("Terrain/TileMapLayer");
         _camera = GetNode<CameraController>("Camera");
 
+        // Load map generation config (needed for TileSet setup and world generation)
+        _mapConfig = GD.Load<MapGenerationConfig>("res://Resources/Config/DefaultMapGeneration.tres");
+        if (_mapConfig == null)
+        {
+            GD.PushError("WorldController: Failed to load MapGenerationConfig!");
+            return;
+        }
+
         // Create or configure TileSet
         SetupTileSet(tileMap);
 
         // Create world generator
         int? seed = Seed == 0 ? null : (int?)Seed;
-        _worldGenerator = new WorldGenerator(seed);
+        _worldGenerator = new WorldGenerator(_mapConfig, seed);
 
         // Generate world
         WorldData = _worldGenerator.Generate(tileMap, this);
@@ -119,11 +132,11 @@ public partial class WorldController : Node2D
     {
         // Create a new TileSet
         TileSet tileSet = new TileSet();
-        tileSet.TileSize = new Vector2I(GameConfig.TILE_SIZE, GameConfig.TILE_SIZE);
+        tileSet.TileSize = new Vector2I(_mapConfig.TileSize, _mapConfig.TileSize);
 
         // Create a single source for our tiles
         TileSetAtlasSource atlasSource = new TileSetAtlasSource();
-        atlasSource.TextureRegionSize = new Vector2I(GameConfig.TILE_SIZE, GameConfig.TILE_SIZE);
+        atlasSource.TextureRegionSize = new Vector2I(_mapConfig.TileSize, _mapConfig.TileSize);
 
         // We'll create a simple 1x1 pixel texture per tile and use modulate color
         // Create 4 tiles (one for each TileType)
@@ -135,8 +148,8 @@ public partial class WorldController : Node2D
             new Color(0.4f, 0.4f, 0.4f)     // Mountain - Gray
         };
 
-        // Create a simple white 16x16 image that we'll modulate with colors
-        Image whiteImage = Image.CreateEmpty(GameConfig.TILE_SIZE, GameConfig.TILE_SIZE, false, Image.Format.Rgba8);
+        // Create a simple white image (tile size) that we'll modulate with colors
+        Image whiteImage = Image.CreateEmpty(_mapConfig.TileSize, _mapConfig.TileSize, false, Image.Format.Rgba8);
         whiteImage.Fill(Colors.White);
         ImageTexture baseTexture = ImageTexture.CreateFromImage(whiteImage);
         atlasSource.Texture = baseTexture;
@@ -193,8 +206,8 @@ public partial class WorldController : Node2D
         navPoly.CellSize = 8.0f;
 
         // Create walkable area covering the entire map
-        float mapWidthPixels = WorldData.Width * GameConfig.TILE_SIZE;
-        float mapHeightPixels = WorldData.Height * GameConfig.TILE_SIZE;
+        float mapWidthPixels = WorldData.Width * _mapConfig.TileSize;
+        float mapHeightPixels = WorldData.Height * _mapConfig.TileSize;
 
         // Simple rectangular outline
         var walkableOutline = new Vector2[]

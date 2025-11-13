@@ -13,25 +13,25 @@ public partial class CameraController : Camera2D
     /// Camera movement speed in pixels per second.
     /// </summary>
     [Export]
-    public float MoveSpeed { get; set; } = GameConfig.CAMERA_MOVE_SPEED;
+    public float MoveSpeed { get; set; } = 300f;
 
     /// <summary>
     /// Minimum zoom level (zoomed out).
     /// </summary>
     [Export]
-    public float ZoomMin { get; set; } = GameConfig.CAMERA_ZOOM_MIN;
+    public float ZoomMin { get; set; } = 0.5f;
 
     /// <summary>
     /// Maximum zoom level (zoomed in).
     /// </summary>
     [Export]
-    public float ZoomMax { get; set; } = GameConfig.CAMERA_ZOOM_MAX;
+    public float ZoomMax { get; set; } = 2.0f;
 
     /// <summary>
     /// Zoom step when using mouse wheel.
     /// </summary>
     [Export]
-    public float ZoomStep { get; set; } = GameConfig.CAMERA_ZOOM_STEP;
+    public float ZoomStep { get; set; } = 0.1f;
 
     /// <summary>
     /// Enable or disable edge scrolling.
@@ -43,13 +43,13 @@ public partial class CameraController : Camera2D
     /// Distance from screen edge in pixels to trigger edge scrolling.
     /// </summary>
     [Export]
-    public float EdgeScrollThreshold { get; set; } = GameConfig.CAMERA_EDGE_SCROLL_THRESHOLD;
+    public float EdgeScrollThreshold { get; set; } = 20f;
 
     /// <summary>
     /// Edge scrolling speed multiplier.
     /// </summary>
     [Export]
-    public float EdgeScrollSpeed { get; set; } = GameConfig.CAMERA_EDGE_SCROLL_SPEED;
+    public float EdgeScrollSpeed { get; set; } = 1.0f;
 
     private Vector2 _mapMinBounds;
     private Vector2 _mapMaxBounds;
@@ -58,7 +58,7 @@ public partial class CameraController : Camera2D
     public override void _Ready()
     {
         // Set default zoom
-        Zoom = new Vector2(GameConfig.CAMERA_ZOOM_DEFAULT, GameConfig.CAMERA_ZOOM_DEFAULT);
+        Zoom = new Vector2(1.0f, 1.0f);
 
         GD.Print("CameraController: Camera initialized");
     }
@@ -158,7 +158,8 @@ public partial class CameraController : Camera2D
     /// <param name="mapHeight">Map height in tiles</param>
     public void SetBounds(int mapWidth, int mapHeight)
     {
-        int padding = GameConfig.CAMERA_BOUNDARY_PADDING * GameConfig.TILE_SIZE;
+        const int boundaryPaddingTiles = 2;
+        int padding = boundaryPaddingTiles * GameConfig.TILE_SIZE;
 
         _mapMinBounds = new Vector2(padding, padding);
         _mapMaxBounds = new Vector2(

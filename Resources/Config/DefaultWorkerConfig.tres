@@ -1,0 +1,15 @@
+[gd_resource type="Resource" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://Scripts/Data/WorkerConfig.cs" id="1"]
+
+[resource]
+script = ExtResource("1")
+MovementSpeed = 100.0
+InteractionRange = 24.0
+Efficiency = 1.0
+NavAgentMaxSpeed = 100.0
+PathDesiredDistance = 8.0
+TargetDesiredDistance = 10.0
+NavAgentRadius = 8.0
+NavMeshCellSize = 8.0
+NavMeshBorderSize = 4.0
