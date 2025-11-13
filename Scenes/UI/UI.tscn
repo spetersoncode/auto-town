@@ -1,6 +1,9 @@
-[gd_scene format=3 uid="uid://bos6dnp8ft4bi"]
+[gd_scene load_steps=2 format=3 uid="uid://bos6dnp8ft4bi"]
+
+[ext_resource type="Script" path="res://Scripts/UI/GameUI.cs" id="1_ui"]
 
 [node name="UI" type="CanvasLayer"]
+script = ExtResource("1_ui")
 
 [node name="MarginContainer" type="MarginContainer" parent="."]
 offset_right = 1152.0
@@ -18,4 +21,77 @@ layout_mode = 2
 
 [node name="TitleLabel" type="Label" parent="MarginContainer/VBoxContainer/TopBar"]
 layout_mode = 2
-text = "Auto-Town - Phase 1"
+text = "Auto-Town - Phase 2"
+
+[node name="Spacer" type="Control" parent="MarginContainer/VBoxContainer/TopBar"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="GameSpeedLabel" type="Label" parent="MarginContainer/VBoxContainer/TopBar"]
+layout_mode = 2
+text = "Speed: 1.0x"
+
+[node name="LegendPanel" type="PanelContainer" parent="."]
+offset_left = 10.0
+offset_top = 460.0
+offset_right = 210.0
+offset_bottom = 638.0
+
+[node name="VBoxContainer" type="VBoxContainer" parent="LegendPanel"]
+layout_mode = 2
+
+[node name="LegendTitle" type="Label" parent="LegendPanel/VBoxContainer"]
+layout_mode = 2
+text = "Legend"
+horizontal_alignment = 1
+
+[node name="HSeparator" type="HSeparator" parent="LegendPanel/VBoxContainer"]
+layout_mode = 2
+
+[node name="TreeRow" type="HBoxContainer" parent="LegendPanel/VBoxContainer"]
+layout_mode = 2
+
+[node name="TreeColor" type="ColorRect" parent="LegendPanel/VBoxContainer/TreeRow"]
+custom_minimum_size = Vector2(16, 16)
+layout_mode = 2
+color = Color(0.13, 0.55, 0.13, 1)
+
+[node name="TreeLabel" type="Label" parent="LegendPanel/VBoxContainer/TreeRow"]
+layout_mode = 2
+text = "  Trees (Wood)"
+
+[node name="StoneRow" type="HBoxContainer" parent="LegendPanel/VBoxContainer"]
+layout_mode = 2
+
+[node name="StoneColor" type="ColorRect" parent="LegendPanel/VBoxContainer/StoneRow"]
+custom_minimum_size = Vector2(16, 16)
+layout_mode = 2
+color = Color(0.5, 0.5, 0.5, 1)
+
+[node name="StoneLabel" type="Label" parent="LegendPanel/VBoxContainer/StoneRow"]
+layout_mode = 2
+text = "  Stone (Rock)"
+
+[node name="ForageRow" type="HBoxContainer" parent="LegendPanel/VBoxContainer"]
+layout_mode = 2
+
+[node name="ForageColor" type="ColorRect" parent="LegendPanel/VBoxContainer/ForageRow"]
+custom_minimum_size = Vector2(16, 16)
+layout_mode = 2
+color = Color(1, 0.84, 0, 1)
+
+[node name="ForageLabel" type="Label" parent="LegendPanel/VBoxContainer/ForageRow"]
+layout_mode = 2
+text = "  Berries (Food)"
+
+[node name="BuildingRow" type="HBoxContainer" parent="LegendPanel/VBoxContainer"]
+layout_mode = 2
+
+[node name="BuildingColor" type="ColorRect" parent="LegendPanel/VBoxContainer/BuildingRow"]
+custom_minimum_size = Vector2(16, 16)
+layout_mode = 2
+color = Color(0.8, 0.2, 0.2, 1)
+
+[node name="BuildingLabel" type="Label" parent="LegendPanel/VBoxContainer/BuildingRow"]
+layout_mode = 2
+text = "  TownHall"
