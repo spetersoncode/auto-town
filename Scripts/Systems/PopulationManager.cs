@@ -215,8 +215,29 @@ public partial class PopulationManager : Node
             _townHall
         );
 
+        // Subscribe to task completion to immediately queue the next task
+        growthFoodTask.TaskCompleted += OnGrowthFoodTaskCompleted;
+
         _taskManager.AddTask(growthFoodTask);
         GD.Print($"[PopulationManager] Created growth food task - hauling {GameConfig.FOOD_PER_HAUL_TRIP} food to town hall");
+    }
+
+    /// <summary>
+    /// Called when a growth food task completes.
+    /// Immediately checks conditions to queue the next task without waiting for timer.
+    /// </summary>
+    private void OnGrowthFoodTaskCompleted(Task task)
+    {
+        GD.Print($"[PopulationManager] Growth food task completed - checking conditions immediately");
+
+        // Unsubscribe from the completed task
+        if (task is GrowthFoodTask growthFoodTask)
+        {
+            growthFoodTask.TaskCompleted -= OnGrowthFoodTaskCompleted;
+        }
+
+        // Immediately check if we need another food haul or can spawn a worker
+        CheckGrowthConditions();
     }
 
     /// <summary>
