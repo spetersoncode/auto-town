@@ -133,6 +133,10 @@ public partial class WorkerManager : Node
         {
             _selectedWorker.Deselect();
             _selectedWorker = null;
+
+            // Emit signal with null to notify UI
+            EmitSignal(SignalName.WorkerSelected, (Worker)null);
+            GD.Print($"WorkerManager: Deselected worker");
         }
     }
 

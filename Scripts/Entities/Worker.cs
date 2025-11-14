@@ -881,33 +881,33 @@ public partial class Worker : CharacterBody2D
     {
         if (@event is InputEventMouseButton mouseEvent && mouseEvent.Pressed)
         {
-            // Check if click is on this worker
-            var mousePos = GetGlobalMousePosition();
-            var distance = GlobalPosition.DistanceTo(mousePos);
+            var workerManager = GetNodeOrNull<WorkerManager>("/root/WorkerManager");
+            if (workerManager == null)
+                return;
 
-            if (distance <= GameConfig.WORKER_SPRITE_SIZE)
+            // Right-click anywhere: deselect current worker
+            if (mouseEvent.ButtonIndex == MouseButton.Right)
             {
-                var workerManager = GetNodeOrNull<WorkerManager>("/root/WorkerManager");
-                if (workerManager != null)
+                if (workerManager.SelectedWorker != null)
                 {
-                    // Left click: select worker
-                    if (mouseEvent.ButtonIndex == MouseButton.Left)
-                    {
-                        GD.Print($"Worker: Left-click detected, selecting worker");
-                        workerManager.SelectWorker(this);
-                        GetViewport().SetInputAsHandled();
-                    }
-                    // Right click: deselect worker if this worker is selected
-                    else if (mouseEvent.ButtonIndex == MouseButton.Right)
-                    {
-                        GD.Print($"Worker: Right-click detected, checking if selected");
-                        if (workerManager.SelectedWorker == this)
-                        {
-                            GD.Print($"Worker: Deselecting worker");
-                            workerManager.DeselectWorker();
-                            GetViewport().SetInputAsHandled();
-                        }
-                    }
+                    GD.Print($"Worker: Right-click detected, deselecting current worker");
+                    workerManager.DeselectWorker();
+                    GetViewport().SetInputAsHandled();
+                }
+                return;
+            }
+
+            // Left-click: check if clicking on this specific worker to select it
+            if (mouseEvent.ButtonIndex == MouseButton.Left)
+            {
+                var mousePos = GetGlobalMousePosition();
+                var distance = GlobalPosition.DistanceTo(mousePos);
+
+                if (distance <= GameConfig.WORKER_SPRITE_SIZE)
+                {
+                    GD.Print($"Worker: Left-click on worker, selecting");
+                    workerManager.SelectWorker(this);
+                    GetViewport().SetInputAsHandled();
                 }
             }
         }

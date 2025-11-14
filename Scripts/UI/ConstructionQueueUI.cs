@@ -20,34 +20,51 @@ public partial class ConstructionQueueUI : MenuButton
 
     public override void _Ready()
     {
-        // Get BuildingManager reference
-        _buildingManager = GetNode<BuildingManager>("/root/BuildingManager");
+        GD.Print("[ConstructionQueueUI] _Ready called - starting initialization");
 
-        // Get the popup menu
-        _popup = GetPopup();
+        try
+        {
+            // Get BuildingManager reference
+            _buildingManager = GetNode<BuildingManager>("/root/BuildingManager");
+            if (_buildingManager == null)
+            {
+                GD.PushError("[ConstructionQueueUI] BuildingManager not found!");
+                return;
+            }
+            GD.Print("[ConstructionQueueUI] BuildingManager found");
 
-        // Set initial visibility to hidden until we have construction sites
-        Visible = false;
+            // Get the popup menu
+            _popup = GetPopup();
+            if (_popup == null)
+            {
+                GD.PushError("[ConstructionQueueUI] GetPopup() returned null - MenuButton may not be properly initialized");
+                return;
+            }
+            GD.Print("[ConstructionQueueUI] Popup menu obtained");
 
-        // Release focus after popup is shown to prevent outline
-        _popup.PopupHide += () => ReleaseFocus();
-        Pressed += () => CallDeferred(MethodName.ReleaseFocus);
+            // Subscribe to construction signals
+            _buildingManager.ConstructionStarted += OnConstructionStarted;
+            _buildingManager.ConstructionCompleted += OnConstructionCompleted;
+            GD.Print("[ConstructionQueueUI] Subscribed to construction signals");
 
-        // Subscribe to construction signals
-        _buildingManager.ConstructionStarted += OnConstructionStarted;
-        _buildingManager.ConstructionCompleted += OnConstructionCompleted;
+            // Create update timer for progress
+            _updateTimer = new Timer();
+            _updateTimer.WaitTime = UPDATE_INTERVAL;
+            _updateTimer.Autostart = true;
+            _updateTimer.Timeout += UpdateDisplay;
+            AddChild(_updateTimer);
+            GD.Print("[ConstructionQueueUI] Update timer created");
 
-        // Create update timer for progress
-        _updateTimer = new Timer();
-        _updateTimer.WaitTime = UPDATE_INTERVAL;
-        _updateTimer.Autostart = true;
-        _updateTimer.Timeout += UpdateDisplay;
-        AddChild(_updateTimer);
+            // Initial update
+            UpdateDisplay();
 
-        // Initial update
-        UpdateDisplay();
-
-        GD.Print("[ConstructionQueueUI] Initialized");
+            GD.Print("[ConstructionQueueUI] Initialized successfully!");
+        }
+        catch (System.Exception ex)
+        {
+            GD.PushError($"[ConstructionQueueUI] Exception during initialization: {ex.Message}");
+            GD.PushError($"[ConstructionQueueUI] Stack trace: {ex.StackTrace}");
+        }
     }
 
     public override void _ExitTree()
@@ -74,33 +91,37 @@ public partial class ConstructionQueueUI : MenuButton
     {
         var sites = _buildingManager.GetConstructionSites();
 
-        if (sites.Count == 0)
-        {
-            Text = "";
-            Visible = false;
-            GD.Print("[ConstructionQueueUI] No construction sites, hiding button");
-            return;
-        }
-
+        // Always visible
         Visible = true;
 
         // Update button text to show count
         Text = $"🏗️ Construction ({sites.Count})";
-        GD.Print($"[ConstructionQueueUI] Showing {sites.Count} construction sites");
 
         // Clear existing popup items
         _popup.Clear();
 
-        // Add all construction sites to the dropdown
-        for (int i = 0; i < sites.Count; i++)
+        if (sites.Count == 0)
         {
-            var site = sites[i];
-            int progressPercent = Mathf.RoundToInt(site.GetResourceProgress() * 100);
-            string itemText = $"{site.Data.Name}: {progressPercent}%";
+            // Show empty state in dropdown
+            _popup.AddItem("No buildings under construction", 0);
+            _popup.SetItemDisabled(0, true);
+            GD.Print("[ConstructionQueueUI] No construction sites");
+        }
+        else
+        {
+            GD.Print($"[ConstructionQueueUI] Showing {sites.Count} construction sites");
 
-            // Add item (disabled so it's display-only)
-            _popup.AddItem(itemText, i);
-            _popup.SetItemDisabled(i, true);
+            // Add all construction sites to the dropdown
+            for (int i = 0; i < sites.Count; i++)
+            {
+                var site = sites[i];
+                int progressPercent = Mathf.RoundToInt(site.GetResourceProgress() * 100);
+                string itemText = $"{site.Data.Name}: {progressPercent}%";
+
+                // Add item (disabled so it's display-only)
+                _popup.AddItem(itemText, i);
+                _popup.SetItemDisabled(i, true);
+            }
         }
     }
 }

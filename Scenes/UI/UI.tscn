@@ -3,10 +3,10 @@
 [ext_resource type="Script" uid="uid://5qp85y1ac72x" path="res://Scripts/UI/GameUI.cs" id="1_ui"]
 [ext_resource type="Script" uid="uid://1efohpvji2w8" path="res://Scripts/UI/WorkerSelectionUI.cs" id="2_worker_ui"]
 [ext_resource type="Script" uid="uid://g45pfoavb8pu" path="res://Scripts/UI/ResourceDisplayUI.cs" id="3_resource_ui"]
-[ext_resource type="Script" path="res://Scripts/UI/PopulationUI.cs" id="4_population_ui"]
-[ext_resource type="Script" path="res://Scripts/UI/WorkerStatsUI.cs" id="5_worker_stats_ui"]
-[ext_resource type="Script" path="res://Scripts/UI/ConstructionQueueUI.cs" id="6_construction_queue_ui"]
-[ext_resource type="Script" path="res://Scripts/UI/HelpOverlayUI.cs" id="7_help_overlay_ui"]
+[ext_resource type="Script" uid="uid://dj1rovsx6tb3t" path="res://Scripts/UI/PopulationUI.cs" id="4_population_ui"]
+[ext_resource type="Script" uid="uid://dumbr807dopd6" path="res://Scripts/UI/WorkerStatsUI.cs" id="5_worker_stats_ui"]
+[ext_resource type="Script" uid="uid://ci5vxvr3nov3d" path="res://Scripts/UI/ConstructionQueueUI.cs" id="6_construction_queue_ui"]
+[ext_resource type="Script" uid="uid://d12nm8g43udam" path="res://Scripts/UI/HelpOverlayUI.cs" id="7_help_overlay_ui"]
 
 [node name="UI" type="CanvasLayer"]
 script = ExtResource("1_ui")
@@ -28,8 +28,8 @@ layout_mode = 2
 
 [node name="TopBarBackground" type="ColorRect" parent="MarginContainer/VBoxContainer/TopBarPanel"]
 layout_mode = 2
-color = Color(0, 0, 0, 0.7)
 mouse_filter = 2
+color = Color(0, 0, 0, 0.7)
 
 [node name="TopBarMargin" type="MarginContainer" parent="MarginContainer/VBoxContainer/TopBarPanel"]
 layout_mode = 2
@@ -92,8 +92,8 @@ text = "|"
 
 [node name="HelpButton" type="Button" parent="MarginContainer/VBoxContainer/TopBarPanel/TopBarMargin/TopBar"]
 layout_mode = 2
-text = "?"
 tooltip_text = "Show Controls (Esc to close)"
+text = "?"
 
 [node name="WorkerSelectionPanel" type="PanelContainer" parent="."]
 offset_left = 952.0
