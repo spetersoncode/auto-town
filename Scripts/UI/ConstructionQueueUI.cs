@@ -26,6 +26,9 @@ public partial class ConstructionQueueUI : MenuButton
         // Get the popup menu
         _popup = GetPopup();
 
+        // Set initial visibility to hidden until we have construction sites
+        Visible = false;
+
         // Release focus after popup is shown to prevent outline
         _popup.PopupHide += () => ReleaseFocus();
         Pressed += () => CallDeferred(MethodName.ReleaseFocus);
@@ -43,6 +46,8 @@ public partial class ConstructionQueueUI : MenuButton
 
         // Initial update
         UpdateDisplay();
+
+        GD.Print("[ConstructionQueueUI] Initialized");
     }
 
     public override void _ExitTree()
@@ -73,6 +78,7 @@ public partial class ConstructionQueueUI : MenuButton
         {
             Text = "";
             Visible = false;
+            GD.Print("[ConstructionQueueUI] No construction sites, hiding button");
             return;
         }
 
@@ -80,6 +86,7 @@ public partial class ConstructionQueueUI : MenuButton
 
         // Update button text to show count
         Text = $"🏗️ Construction ({sites.Count})";
+        GD.Print($"[ConstructionQueueUI] Showing {sites.Count} construction sites");
 
         // Clear existing popup items
         _popup.Clear();

@@ -893,14 +893,17 @@ public partial class Worker : CharacterBody2D
                     // Left click: select worker
                     if (mouseEvent.ButtonIndex == MouseButton.Left)
                     {
+                        GD.Print($"Worker: Left-click detected, selecting worker");
                         workerManager.SelectWorker(this);
                         GetViewport().SetInputAsHandled();
                     }
                     // Right click: deselect worker if this worker is selected
                     else if (mouseEvent.ButtonIndex == MouseButton.Right)
                     {
+                        GD.Print($"Worker: Right-click detected, checking if selected");
                         if (workerManager.SelectedWorker == this)
                         {
+                            GD.Print($"Worker: Deselecting worker");
                             workerManager.DeselectWorker();
                             GetViewport().SetInputAsHandled();
                         }
