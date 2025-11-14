@@ -21,7 +21,7 @@ A 2D town-building simulation tech demo built with Godot 4.5.1 and C#.
 - **Click workers** to select/deselect them
 - **Number keys (1-4)** to assign jobs to selected workers
 - **F keys (F1-F4)** to build buildings
-- **ESC** to show help/controls
+- **? button** in upper right hand corner to see controls
 
 ## Development
 
