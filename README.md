@@ -1,6 +1,6 @@
 # Auto-Town
 
-A 2D town-building simulation game built with Godot 4.5.1 and C#.
+A 2D town-building simulation tech demo built with Godot 4.5.1 and C#.
 
 ## Features
 
