@@ -879,31 +879,32 @@ public partial class Worker : CharacterBody2D
 
     public override void _UnhandledInput(InputEvent @event)
     {
-        if (@event is InputEventMouseButton mouseEvent)
+        if (@event is InputEventMouseButton mouseEvent && mouseEvent.Pressed)
         {
-            if (mouseEvent.ButtonIndex == MouseButton.Left && mouseEvent.Pressed)
-            {
-                // Check if click is on this worker
-                var mousePos = GetGlobalMousePosition();
-                var distance = GlobalPosition.DistanceTo(mousePos);
+            // Check if click is on this worker
+            var mousePos = GetGlobalMousePosition();
+            var distance = GlobalPosition.DistanceTo(mousePos);
 
-                if (distance <= GameConfig.WORKER_SPRITE_SIZE)
+            if (distance <= GameConfig.WORKER_SPRITE_SIZE)
+            {
+                var workerManager = GetNodeOrNull<WorkerManager>("/root/WorkerManager");
+                if (workerManager != null)
                 {
-                    // Notify WorkerManager of selection/deselection
-                    var workerManager = GetNodeOrNull<WorkerManager>("/root/WorkerManager");
-                    if (workerManager != null)
+                    // Left click: select worker
+                    if (mouseEvent.ButtonIndex == MouseButton.Left)
                     {
-                        // Toggle selection: if already selected, deselect
+                        workerManager.SelectWorker(this);
+                        GetViewport().SetInputAsHandled();
+                    }
+                    // Right click: deselect worker if this worker is selected
+                    else if (mouseEvent.ButtonIndex == MouseButton.Right)
+                    {
                         if (workerManager.SelectedWorker == this)
                         {
                             workerManager.DeselectWorker();
-                        }
-                        else
-                        {
-                            workerManager.SelectWorker(this);
+                            GetViewport().SetInputAsHandled();
                         }
                     }
-                    GetViewport().SetInputAsHandled();
                 }
             }
         }
