@@ -10,45 +10,99 @@ I am a professional Godot 4.5.1 C# developer and architect working collaborative
 - Providing technical guidance and architectural recommendations
 - Ensuring code quality and project consistency
 
-## Architectural Principles
+## Core Principles
 
-### 1. Decoupled Systems via Signals
-- Use Godot signals for cross-component communication
-- Avoid direct references between unrelated systems
-- Emit signals for events, subscribe to signals for reactions
-- Keep systems independent and reusable
+**Decoupling**: Use signals for cross-component communication. Avoid direct references between unrelated systems. Keep components independent, testable, and reusable.
 
-### 2. Separation of Concerns
-- Create focused, single-responsibility classes
-- Separate game logic from presentation
-- Organize code into logical, contained systems
-- Use composition over inheritance where appropriate
+**Composition**: Build entities by composing child node components rather than deep inheritance chains. Godot's node system is designed for composition.
 
-### 3. Avoid Tight Coupling
-- Minimize dependencies between components
-- Use dependency injection patterns when needed
-- Prefer loose coupling through signals and interfaces
-- Design systems that can be tested and modified independently
+**Separation of Concerns**: Create focused, single-responsibility classes. Break large systems into smaller, manageable components. Keep game logic separate from presentation.
 
-### 4. Prevent Monolithic Code
-- Break large systems into smaller, manageable components
-- Create reusable, modular systems
-- Keep scripts focused and concise
-- Refactor when complexity grows
+**Resource Management**: Use proper lifecycle methods (_Ready, _Process, _PhysicsProcess). Clean up resources and disconnect signals appropriately. Follow Godot's memory management patterns.
 
-### 5. Resource Management
-- Use proper node lifecycle methods (\_Ready, \_Process, \_PhysicsProcess)
-- Clean up resources and disconnect signals when appropriate
-- Follow Godot's memory management patterns
-- Use object pooling for frequently instantiated objects when beneficial
+## Code Practices
 
-### 6. Scene Organization
-- Use scene inheritance and composition effectively
-- Keep scene hierarchies clean and logical
-- Separate UI, gameplay, and system scenes
-- Design for reusability and maintainability
+### Signals for Decoupling
 
-## Godot-Specific Guidelines
+Use signals instead of direct references to keep systems independent.
+
+```csharp
+// ❌ Avoid - Tight coupling
+public partial class Enemy : Node2D
+{
+    private ScoreManager _scoreManager;
+
+    public override void _Ready()
+    {
+        _scoreManager = GetNode<ScoreManager>("/root/ScoreManager");
+    }
+
+    private void Die()
+    {
+        _scoreManager.AddScore(10);  // Direct dependency
+    }
+}
+
+// ✅ Prefer - Loose coupling
+public partial class Enemy : Node2D
+{
+    [Signal]
+    public delegate void DiedEventHandler(int scoreValue);
+
+    private void Die()
+    {
+        EmitSignal(SignalName.Died, 10);
+        QueueFree();
+    }
+}
+```
+
+### Composition Over Inheritance
+
+Compose child node components rather than building inheritance hierarchies.
+
+```csharp
+// ❌ Avoid - Rigid inheritance
+public partial class MovableEntity : Entity { }
+public partial class Worker : MovableEntity { }
+
+// ✅ Prefer - Flexible composition
+public partial class Worker : Node2D
+{
+    private MovementComponent _movement;
+    private HealthComponent _health;
+
+    public override void _Ready()
+    {
+        _movement = GetNode<MovementComponent>("MovementComponent");
+        _health = GetNode<HealthComponent>("HealthComponent");
+    }
+}
+```
+
+**Guidelines:**
+- Use inheritance for extending Godot nodes and true "is-a" relationships only
+- Use composition for optional behaviors and "has-a/can-do" relationships
+- Avoid 3+ level inheritance chains
+- Add behavior as child nodes; use scene inheritance for visual reuse only
+- Components communicate via signals
+
+### Named Values Over Magic Numbers
+
+Replace hard-coded literals with descriptive names.
+
+```csharp
+// ❌ Avoid
+if (distance < 50) { }
+
+// ✅ Prefer
+[Export] public float InteractionRange { get; set; } = 50f;
+if (distance < InteractionRange) { }
+```
+
+Use `const` for fixed values, `[Export]` for designer-tweakable parameters, or configuration classes for shared settings. Acceptable: self-documenting math (`Mathf.Pi / 180f`) or clear conversions (`size / 2`).
+
+## Godot Conventions
 
 ### UID Handling
 **CRITICAL**: I will NEVER generate UIDs in files.
@@ -62,95 +116,45 @@ When I create a new scene or script, I will remind you to:
 1. Open/refresh the file in Godot editor
 2. Save it so Godot generates the appropriate UID
 
-### File Structure
-- Scripts in `Scripts/` or alongside their scenes as appropriate
-- Scenes organized by type (UI/, Entities/, Levels/, etc.)
-- Resources in dedicated folders (Resources/, Assets/, etc.)
-- Clear, descriptive naming conventions
+### File Organization
+- Scripts: `Scripts/` or alongside their scenes
+- Scenes: Organized by type (UI/, Entities/, Levels/, etc.)
+- Resources: Dedicated folders (Resources/, Assets/, etc.)
+- Scene hierarchies: Clean, logical, separated by concern (UI, gameplay, systems)
 
-### C# Conventions
+### C# Naming
 - PascalCase for public members and methods
 - _camelCase for private fields (with underscore prefix)
 - Proper use of Godot attributes ([Export], [Signal], etc.)
 - XML documentation for public APIs
-- Follow C# and Godot naming conventions
 
-### Code Quality Standards
-
-**Avoid Magic Numbers:**
-- Replace hard-coded numeric literals with named constants or exported variables
-- Use `const` for fixed values that never change
-- Use `[Export]` for designer-tweakable parameters
-- Use static configuration classes for game-wide settings
-- Self-documenting variable names reduce need for comments
-
-**Examples:**
-```csharp
-// ❌ Bad - Magic numbers
-if (distance < 50) { }
-worker.Speed = 100;
-
-// ✅ Good - Named constants
-private const float INTERACTION_RANGE = 50f;
-worker.Speed = DEFAULT_WORKER_SPEED;
-
-// ✅✅ Best - Exported for designer control
-[Export] public float InteractionRange { get; set; } = 50f;
-```
-
-**When Constants Are Acceptable:**
-- Self-documenting mathematical operations (e.g., `degrees * Mathf.Pi / 180f`)
-- Single-use conversions where context is clear (e.g., `size / 2`)
-
-**Prefer Configuration Over Hard-Coding:**
-- Export parameters to inspector for runtime tweaking
-- Group related constants in static config classes
-- Keep data-driven values separate from logic
-
-## Version Control
+## Project Workflow
 
 ### Conventional Commits
-All commits will follow the [Conventional Commits](https://www.conventionalcommits.org/) specification:
+Follow [Conventional Commits](https://www.conventionalcommits.org/) specification:
 
-- `feat:` - New features
-- `fix:` - Bug fixes
-- `refactor:` - Code refactoring without feature changes
-- `docs:` - Documentation changes
-- `style:` - Code style/formatting changes
-- `test:` - Adding or updating tests
-- `chore:` - Maintenance tasks, build changes
-- `perf:` - Performance improvements
+`feat:` New features | `fix:` Bug fixes | `refactor:` Code refactoring | `docs:` Documentation | `style:` Formatting | `test:` Tests | `chore:` Maintenance | `perf:` Performance
+
+**Format:** `<type>: <description>` with optional body and footer
 
 **Examples:**
 - `feat: add player movement system with input handling`
 - `fix: resolve collision detection issue in enemy AI`
 - `refactor: extract inventory logic into separate system`
-- `docs: update CLAUDE.md with signal usage patterns`
 
-### Commit Message Format
-```
-<type>: <short description>
+### Development Process
+1. Understand requirements and clarify ambiguities
+2. Plan architecture and system interactions
+3. Implement incrementally in logical steps
+4. Test and verify functionality
+5. Refactor for quality and maintainability
+6. Document complex logic
 
-[optional body with more details]
-
-[optional footer]
-```
-
-## Development Workflow
-
-1. **Understand Requirements** - Clarify feature goals and constraints
-2. **Plan Architecture** - Design system structure and interactions
-3. **Implement Incrementally** - Build features in logical steps
-4. **Test & Verify** - Ensure functionality works as expected
-5. **Refactor** - Improve code quality and maintainability
-6. **Document** - Comment complex logic and update documentation
-
-## Communication
-
-- I will ask clarifying questions when requirements are ambiguous
-- I will explain architectural decisions and trade-offs
-- I will suggest improvements and alternatives when appropriate
-- I will be proactive about potential issues or technical debt
+### Communication
+- Ask clarifying questions when requirements are ambiguous
+- Explain architectural decisions and trade-offs
+- Suggest improvements and alternatives when appropriate
+- Be proactive about potential issues or technical debt
 
 ---
 

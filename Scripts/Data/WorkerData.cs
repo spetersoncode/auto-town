@@ -25,6 +25,9 @@ public enum WorkerState
 /// </summary>
 public class WorkerData
 {
+    /// <summary>Maximum inventory capacity for all workers</summary>
+    public const int MAX_INVENTORY_CAPACITY = 20;
+
     /// <summary>Assigned job type for this worker</summary>
     public JobType Job { get; set; }
 
@@ -66,6 +69,33 @@ public class WorkerData
     }
 
     /// <summary>
+    /// Checks if the worker has room for more resources in their inventory.
+    /// </summary>
+    /// <returns>True if inventory has available space</returns>
+    public bool CanCarryMore()
+    {
+        return CarriedAmount < MAX_INVENTORY_CAPACITY;
+    }
+
+    /// <summary>
+    /// Gets remaining inventory space.
+    /// </summary>
+    /// <returns>Number of items that can still be carried</returns>
+    public int GetRemainingCapacity()
+    {
+        return MAX_INVENTORY_CAPACITY - CarriedAmount;
+    }
+
+    /// <summary>
+    /// Checks if inventory is full.
+    /// </summary>
+    /// <returns>True if inventory is at maximum capacity</returns>
+    public bool IsInventoryFull()
+    {
+        return CarriedAmount >= MAX_INVENTORY_CAPACITY;
+    }
+
+    /// <summary>
     /// Picks up resources for hauling.
     /// </summary>
     /// <param name="resourceType">Type of resource to carry</param>
@@ -74,6 +104,32 @@ public class WorkerData
     {
         CarriedResource = resourceType;
         CarriedAmount = amount;
+    }
+
+    /// <summary>
+    /// Adds resources to existing inventory (for production buildings).
+    /// </summary>
+    /// <param name="resourceType">Type of resource to add</param>
+    /// <param name="amount">Amount to add</param>
+    /// <returns>Actual amount added (respecting capacity)</returns>
+    public int AddToInventory(ResourceType resourceType, int amount)
+    {
+        // If not carrying anything yet, start carrying this resource type
+        if (!CarriedResource.HasValue)
+        {
+            CarriedResource = resourceType;
+            CarriedAmount = 0;
+        }
+
+        // Can only add if carrying the same resource type
+        if (CarriedResource != resourceType)
+            return 0;
+
+        int remainingSpace = GetRemainingCapacity();
+        int amountToAdd = Godot.Mathf.Min(amount, remainingSpace);
+        CarriedAmount += amountToAdd;
+
+        return amountToAdd;
     }
 
     /// <summary>

@@ -8,6 +8,7 @@ namespace autotown.Data;
 /// <summary>
 /// Task for processing resources at a building (Sawmill, Mine, Farm).
 /// Generated periodically by active processing buildings.
+/// Worker continues production cycles until their inventory is full.
 /// </summary>
 public partial class ProcessTask : Task
 {
@@ -22,24 +23,29 @@ public partial class ProcessTask : Task
     public ResourceType OutputResourceType { get; private set; }
 
     /// <summary>
-    /// Amount of resource to produce.
+    /// Amount of resource to produce per cycle.
     /// </summary>
     public int OutputAmount { get; private set; }
 
     /// <summary>
-    /// Time required to complete processing (in seconds).
+    /// Time required to complete one production cycle (in seconds).
     /// </summary>
     private float _processTime;
 
     /// <summary>
-    /// Progress of processing (0.0 to 1.0).
+    /// Progress of current production cycle (0.0 to 1.0).
     /// </summary>
     public float Progress { get; private set; } = 0f;
 
     /// <summary>
-    /// Time elapsed working on processing.
+    /// Time elapsed working on current cycle.
     /// </summary>
     private float _elapsedTime = 0f;
+
+    /// <summary>
+    /// Reference to the worker performing this task.
+    /// </summary>
+    private WorkerData _assignedWorker = null;
 
     /// <summary>
     /// Valid job types depend on the building type.
@@ -84,6 +90,14 @@ public partial class ProcessTask : Task
             && TargetBuilding.State == BuildingState.Active;
     }
 
+    /// <summary>
+    /// Sets the worker assigned to this task.
+    /// </summary>
+    public void SetAssignedWorker(WorkerData worker)
+    {
+        _assignedWorker = worker;
+    }
+
     public override void OnStart()
     {
         if (!IsValid())
@@ -93,7 +107,7 @@ public partial class ProcessTask : Task
             return;
         }
 
-        GD.Print($"[ProcessTask] Started processing at {TargetBuilding.Data.Name} to produce {OutputAmount} {OutputResourceType}");
+        GD.Print($"[ProcessTask] Started processing at {TargetBuilding.Data.Name} to produce {OutputResourceType}");
     }
 
     public override void OnUpdate(double delta)
@@ -104,26 +118,47 @@ public partial class ProcessTask : Task
             return;
         }
 
+        if (_assignedWorker == null)
+        {
+            GD.PushWarning("[ProcessTask] No worker assigned to task");
+            return;
+        }
+
         // Update processing progress
         _elapsedTime += (float)delta;
         Progress = Mathf.Clamp(_elapsedTime / _processTime, 0f, 1f);
 
-        // Log progress at 25% intervals
-        int progressPercent = Mathf.FloorToInt(Progress * 100);
-        if (progressPercent > 0 && progressPercent % 25 == 0)
-        {
-            // Only log once per 25% milestone
-            int lastPercent = Mathf.FloorToInt((_elapsedTime - (float)delta) / _processTime * 100);
-            if (lastPercent < progressPercent && progressPercent % 25 == 0)
-            {
-                GD.Print($"[ProcessTask] Processing progress: {progressPercent}%");
-            }
-        }
-
-        // Check if processing is complete
+        // Check if one production cycle is complete
         if (Progress >= 1.0f)
         {
-            Complete();
+            // Add resources to worker's inventory
+            int amountAdded = _assignedWorker.AddToInventory(OutputResourceType, OutputAmount);
+
+            if (amountAdded > 0)
+            {
+                GD.Print($"[ProcessTask] Produced {amountAdded} {OutputResourceType}, worker inventory: {_assignedWorker.CarriedAmount}/{WorkerData.MAX_INVENTORY_CAPACITY}");
+            }
+
+            // Check if worker's inventory is full
+            if (_assignedWorker.IsInventoryFull())
+            {
+                GD.Print($"[ProcessTask] Worker inventory full ({_assignedWorker.CarriedAmount}/{WorkerData.MAX_INVENTORY_CAPACITY}), completing task");
+                Complete();
+                return;
+            }
+
+            // If worker can carry more, reset for another production cycle
+            if (_assignedWorker.CanCarryMore())
+            {
+                _elapsedTime = 0f;
+                Progress = 0f;
+                GD.Print($"[ProcessTask] Starting new production cycle");
+            }
+            else
+            {
+                // Inventory full, complete the task
+                Complete();
+            }
         }
     }
 
@@ -135,19 +170,17 @@ public partial class ProcessTask : Task
             return;
         }
 
-        GD.Print($"[ProcessTask] Completed processing at {TargetBuilding.Data.Name}, produced {OutputAmount} {OutputResourceType}");
-
-        // Add the produced resource to the global resource manager
-        var resourceManager = TargetBuilding.GetNode<ResourceManager>("/root/ResourceManager");
-        if (resourceManager != null)
+        if (_assignedWorker != null)
         {
-            resourceManager.AddResource(OutputResourceType, OutputAmount);
-            GD.Print($"[ProcessTask] Added {OutputAmount} {OutputResourceType} to global stockpile");
+            GD.Print($"[ProcessTask] Completed processing at {TargetBuilding.Data.Name}, worker carrying {_assignedWorker.CarriedAmount} {OutputResourceType}");
         }
         else
         {
-            GD.PushError("[ProcessTask] Could not find ResourceManager");
+            GD.Print($"[ProcessTask] Completed processing at {TargetBuilding.Data.Name}");
         }
+
+        // Worker will now haul the resources to stockpile
+        // Resources are in worker's inventory, not added directly to global stockpile
     }
 
     /// <summary>

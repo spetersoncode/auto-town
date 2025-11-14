@@ -220,15 +220,50 @@ public partial class Worker : CharacterBody2D
             // Check if we've finished harvesting (state went back to Available after being harvested)
             if (resourceState == HarvestableResource.HarvestState.Available)
             {
-                // Harvest completed! Pick up resources
-                GD.Print($"Worker: Harvest completed! Resource state is now Available. Picking up resources.");
-                _data.PickupResource(gatherTask.ResourceType, gatherTask.ExpectedYield);
-                GD.Print($"Worker: Picked up {gatherTask.ExpectedYield} {gatherTask.ResourceType}");
+                // Harvest completed! Add resources to inventory
+                int amountAdded = _data.AddToInventory(gatherTask.ResourceType, gatherTask.ExpectedYield);
 
-                // DON'T complete task yet - wait until we deposit at stockpile
-                // Now haul to stockpile
-                SetState(WorkerState.Hauling);
-                SetDestination(gatherTask.StockpilePosition);
+                if (amountAdded > 0)
+                {
+                    GD.Print($"Worker: Harvest completed! Added {amountAdded} {gatherTask.ResourceType}, inventory: {_data.CarriedAmount}/{WorkerData.MAX_INVENTORY_CAPACITY}");
+                }
+
+                // Check if worker's inventory is full or resource is depleted
+                if (_data.IsInventoryFull())
+                {
+                    GD.Print($"Worker: Inventory full ({_data.CarriedAmount}/{WorkerData.MAX_INVENTORY_CAPACITY}), hauling to stockpile");
+                    SetState(WorkerState.Hauling);
+                    SetDestination(gatherTask.StockpilePosition);
+                }
+                else if (gatherTask.ResourceNode.State == HarvestableResource.HarvestState.Depleted)
+                {
+                    GD.Print($"Worker: Resource depleted with {_data.CarriedAmount} resources, hauling to stockpile");
+                    SetState(WorkerState.Hauling);
+                    SetDestination(gatherTask.StockpilePosition);
+                }
+                else if (_data.CanCarryMore())
+                {
+                    // Inventory not full and resource still available - harvest again!
+                    GD.Print($"Worker: Inventory has space ({_data.CarriedAmount}/{WorkerData.MAX_INVENTORY_CAPACITY}), harvesting again");
+
+                    // Reserve and start another harvest cycle
+                    if (gatherTask.TryReserveResource(this))
+                    {
+                        bool started = gatherTask.ResourceNode.StartHarvest(this);
+                        if (!started)
+                        {
+                            GD.Print($"Worker: Failed to start next harvest, hauling current resources");
+                            SetState(WorkerState.Hauling);
+                            SetDestination(gatherTask.StockpilePosition);
+                        }
+                    }
+                    else
+                    {
+                        GD.Print($"Worker: Failed to reserve for next harvest, hauling current resources");
+                        SetState(WorkerState.Hauling);
+                        SetDestination(gatherTask.StockpilePosition);
+                    }
+                }
             }
 
             // Otherwise, still BeingHarvested - just wait
@@ -274,7 +309,19 @@ public partial class Worker : CharacterBody2D
             if (processTask.State == TaskState.Completed)
             {
                 _currentTask = null;
-                SetState(WorkerState.Idle);
+
+                // Worker now has resources in inventory, transition to hauling
+                if (_data.IsCarryingResources())
+                {
+                    GD.Print($"Worker: Production complete, hauling {_data.CarriedAmount} {_data.CarriedResource} to stockpile");
+                    SetState(WorkerState.Hauling);
+                    SetDestination(_stockpile.GlobalPosition);
+                }
+                else
+                {
+                    // No resources produced (edge case), go idle
+                    SetState(WorkerState.Idle);
+                }
             }
         }
     }
@@ -319,6 +366,12 @@ public partial class Worker : CharacterBody2D
         if (!_navigationReady)
         {
             // Wait for navigation to be ready before assigning tasks
+            return;
+        }
+
+        // Don't scan for new tasks if already assigned to a task
+        if (_currentTask != null)
+        {
             return;
         }
 
@@ -413,6 +466,10 @@ public partial class Worker : CharacterBody2D
             }
 
             _currentTask = task;
+
+            // Set the worker reference on the GatherTask so it can manage inventory
+            gatherTask.SetAssignedWorker(_data);
+
             GD.Print($"Worker: Assigned {task.Type} task at {task.Position}");
 
             // Start moving to task location
@@ -513,6 +570,10 @@ public partial class Worker : CharacterBody2D
             }
 
             _currentTask = task;
+
+            // Set the worker reference on the ProcessTask so it can manage inventory
+            processTask.SetAssignedWorker(_data);
+
             GD.Print($"Worker: Assigned Process task at {task.Position}");
 
             // Start moving to building
@@ -686,6 +747,14 @@ public partial class Worker : CharacterBody2D
                     SetState(WorkerState.Idle);
                 }
             }
+        }
+        else if (_state == WorkerState.Hauling && _currentTask == null)
+        {
+            // Worker is hauling without a task (e.g., after completing ProcessTask)
+            // Deposit resources at stockpile
+            GD.Print($"Worker: Reached stockpile with {_data.CarriedAmount} {_data.CarriedResource}, depositing");
+            DepositResources();
+            SetState(WorkerState.Idle);
         }
     }
 

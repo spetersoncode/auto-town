@@ -5,6 +5,7 @@ namespace autotown.Data;
 
 /// <summary>
 /// Task for gathering resources from harvestable resource nodes.
+/// Worker continues harvesting until their inventory is full.
 /// </summary>
 public partial class GatherTask : Task
 {
@@ -19,7 +20,7 @@ public partial class GatherTask : Task
     public ResourceType ResourceType { get; private set; }
 
     /// <summary>
-    /// Expected yield from this harvest.
+    /// Expected yield per harvest cycle.
     /// </summary>
     public int ExpectedYield { get; private set; }
 
@@ -27,6 +28,11 @@ public partial class GatherTask : Task
     /// Position of the stockpile where resources should be deposited.
     /// </summary>
     public Vector2 StockpilePosition { get; set; }
+
+    /// <summary>
+    /// Reference to the worker performing this task.
+    /// </summary>
+    private WorkerData _assignedWorker = null;
 
     public override JobType[] ValidJobTypes
     {
@@ -78,6 +84,14 @@ public partial class GatherTask : Task
             && ResourceNode.State != HarvestableResource.HarvestState.Depleted;
     }
 
+    /// <summary>
+    /// Sets the worker assigned to this task.
+    /// </summary>
+    public void SetAssignedWorker(WorkerData worker)
+    {
+        _assignedWorker = worker;
+    }
+
     public override void OnStart()
     {
         if (!IsValid())
@@ -98,7 +112,17 @@ public partial class GatherTask : Task
 
     public override void OnComplete()
     {
-        GD.Print($"GatherTask: Completed harvesting {ExpectedYield} {ResourceType}");
+        if (_assignedWorker != null)
+        {
+            GD.Print($"GatherTask: Completed gathering, worker carrying {_assignedWorker.CarriedAmount} {ResourceType}");
+        }
+        else
+        {
+            GD.Print($"GatherTask: Completed gathering {ResourceType}");
+        }
+
+        // Worker will now haul the resources to stockpile
+        // Resources are in worker's inventory
     }
 
     /// <summary>
