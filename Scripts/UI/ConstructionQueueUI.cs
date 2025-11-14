@@ -7,21 +7,28 @@ using autotown.Systems;
 namespace autotown.UI;
 
 /// <summary>
-/// UI component that displays active construction sites with progress percentages.
-/// Shows format: 🏗️ House: 75%, Sawmill: 20%
+/// UI component that displays active construction sites in a dropdown menu.
+/// Shows button with count, clicking reveals all construction sites with progress.
 /// </summary>
-public partial class ConstructionQueueUI : Label
+public partial class ConstructionQueueUI : MenuButton
 {
     private BuildingManager _buildingManager;
     private Timer _updateTimer;
+    private PopupMenu _popup;
 
-    private const int MAX_DISPLAYED_SITES = 3;
     private const float UPDATE_INTERVAL = 0.5f; // Update twice per second
 
     public override void _Ready()
     {
         // Get BuildingManager reference
         _buildingManager = GetNode<BuildingManager>("/root/BuildingManager");
+
+        // Get the popup menu
+        _popup = GetPopup();
+
+        // Release focus after popup is shown to prevent outline
+        _popup.PopupHide += () => ReleaseFocus();
+        Pressed += () => CallDeferred(MethodName.ReleaseFocus);
 
         // Subscribe to construction signals
         _buildingManager.ConstructionStarted += OnConstructionStarted;
@@ -71,24 +78,22 @@ public partial class ConstructionQueueUI : Label
 
         Visible = true;
 
-        // Build display string for up to MAX_DISPLAYED_SITES
-        var displayParts = new List<string>();
+        // Update button text to show count
+        Text = $"🏗️ Construction ({sites.Count})";
 
-        int displayCount = Mathf.Min(sites.Count, MAX_DISPLAYED_SITES);
-        for (int i = 0; i < displayCount; i++)
+        // Clear existing popup items
+        _popup.Clear();
+
+        // Add all construction sites to the dropdown
+        for (int i = 0; i < sites.Count; i++)
         {
             var site = sites[i];
             int progressPercent = Mathf.RoundToInt(site.GetResourceProgress() * 100);
-            displayParts.Add($"{site.Data.Name}: {progressPercent}%");
-        }
+            string itemText = $"{site.Data.Name}: {progressPercent}%";
 
-        // If there are more sites than we can display, add indicator
-        if (sites.Count > MAX_DISPLAYED_SITES)
-        {
-            int remaining = sites.Count - MAX_DISPLAYED_SITES;
-            displayParts.Add($"+{remaining} more");
+            // Add item (disabled so it's display-only)
+            _popup.AddItem(itemText, i);
+            _popup.SetItemDisabled(i, true);
         }
-
-        Text = $"🏗️ {string.Join(", ", displayParts)}";
     }
 }

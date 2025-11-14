@@ -73,8 +73,9 @@ script = ExtResource("5_worker_stats_ui")
 layout_mode = 2
 text = "|"
 
-[node name="ConstructionQueueDisplay" type="Label" parent="MarginContainer/VBoxContainer/TopBarPanel/TopBarMargin/TopBar"]
+[node name="ConstructionQueueDisplay" type="MenuButton" parent="MarginContainer/VBoxContainer/TopBarPanel/TopBarMargin/TopBar"]
 layout_mode = 2
+flat = false
 script = ExtResource("6_construction_queue_ui")
 
 [node name="Spacer" type="Control" parent="MarginContainer/VBoxContainer/TopBarPanel/TopBarMargin/TopBar"]

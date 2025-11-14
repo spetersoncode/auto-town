@@ -889,11 +889,19 @@ public partial class Worker : CharacterBody2D
 
                 if (distance <= GameConfig.WORKER_SPRITE_SIZE)
                 {
-                    // Notify WorkerManager of selection
+                    // Notify WorkerManager of selection/deselection
                     var workerManager = GetNodeOrNull<WorkerManager>("/root/WorkerManager");
                     if (workerManager != null)
                     {
-                        workerManager.SelectWorker(this);
+                        // Toggle selection: if already selected, deselect
+                        if (workerManager.SelectedWorker == this)
+                        {
+                            workerManager.DeselectWorker();
+                        }
+                        else
+                        {
+                            workerManager.SelectWorker(this);
+                        }
                     }
                     GetViewport().SetInputAsHandled();
                 }
